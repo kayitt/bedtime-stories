@@ -1,0 +1,11 @@
+conditionalEvents:
+- condition: "True"
+  transitionToScene: actions.scene.END_CONVERSATION
+onEnter:
+  staticPrompt:
+    candidates:
+    - promptResponse:
+        firstSimple:
+          variants:
+          - speech: See you next time
+  webhookHandler: start_scene_initial_prompt
