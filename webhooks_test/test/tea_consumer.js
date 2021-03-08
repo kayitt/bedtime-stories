@@ -1,5 +1,5 @@
 var expect    = require("chai").expect;
-var consumer = require("../tea_consumer");
+var consumer = require("../../webhooks/ActionsOnGoogleFulfillment/tea_consumer");
 
 describe("Color Code Converter", function() {
   describe("RGB to Hex conversion", function() {
