@@ -1,4 +1,5 @@
 handlers:
-- name: start_scene_initial_prompt
+- name: tea_consumption
+- name: wake_up_time
 inlineCloudFunction:
   executeFunction: ActionsOnGoogleFulfillment
