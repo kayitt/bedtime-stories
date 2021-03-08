@@ -1,4 +1,11 @@
 exports.toSpeach = function(cups) {
-    return "sdfsdfa"
+
+    if (cups == 0) {
+        return "You have not drank any tea.";
+    } else if (cups == 1) {
+        return "You have drank a tea.";
+    }
+
+    return `You have conumed ${cups} cups of tea.`;
   
   };

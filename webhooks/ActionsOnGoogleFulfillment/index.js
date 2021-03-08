@@ -1,5 +1,7 @@
 const {conversation} = require('@assistant/conversation');
 const functions = require('firebase-functions');
+var teaConsumer = require("tea_consumer");
+
 
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -14,7 +16,8 @@ app.handle('tea_consumption', async (conv) => {
   const teaMap = await testRef.doc('tea').get();
   
   const teaCups = teaMap.data().cups;
-  conv.add(`today you have consumed ${teaCups} cups of tea.`);
+
+  conv.add(teaConsumer.toSpeach(teaCups));
 });
 
 app.handle('wake_up_time', (conv) => {

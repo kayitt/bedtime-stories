@@ -1,14 +1,25 @@
-var expect    = require("chai").expect;
+var expect = require("chai").expect;
 var consumer = require("../../webhooks/ActionsOnGoogleFulfillment/tea_consumer");
 
-describe("Color Code Converter", function() {
-  describe("RGB to Hex conversion", function() {
-    it("converts the basic colors", function() {
-      let speach = consumer.toSpeach(4);
+describe("tea comsumer", function () {
 
-      expect(speach).to.equal("You have conumed 4 cups of tea.");
-    });
+  it("consumes plural number of tea", function () {
+    let speach = consumer.toSpeach(4);
+
+    expect(speach).to.equal("You have conumed 4 cups of tea.");
   });
 
+  it("consumes no tea", function () {
+    let speach = consumer.toSpeach(0);
+
+    expect(speach).to.equal("You have not drank any tea.");
+  });
+
+  it("consumes a single tea", function () {
+    let speach = consumer.toSpeach(1);
+
+    expect(speach).to.equal("You have drank a tea.");
+  });
 });
+
 
