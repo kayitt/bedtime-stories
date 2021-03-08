@@ -6,9 +6,14 @@
   "engines": {
     "node": "10"
   },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
   "dependencies": {
     "@assistant/conversation": "^3.0.0",
+    "chai": "^4.3.3",
     "firebase-admin": "~8.0.0",
-    "firebase-functions": "^3.1.0"
+    "firebase-functions": "^3.1.0",
+    "mocha": "^8.3.1"
   }
 }
