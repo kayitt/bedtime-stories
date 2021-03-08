@@ -1,0 +1,19 @@
+intentEvents:
+- intent: actions.intent.NO
+  transitionToScene: actions.scene.END_CONVERSATION
+- intent: Tea
+  transitionToScene: Tea
+- intent: WakeUp
+  transitionToScene: WakeUp
+onEnter:
+  staticPrompt:
+    candidates:
+    - promptResponse:
+        firstSimple:
+          variants:
+          - speech: Which bedtime story would you like to hear? You can choose tea
+              consumption or wake up time.
+        suggestions:
+        - title: Tea consumption
+        - title: Wake up time
+        - title: "No"
