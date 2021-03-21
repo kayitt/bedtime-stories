@@ -1,0 +1,16 @@
+intentEvents:
+- intent: actions.intent.YES
+  transitionToScene: Choose
+- intent: actions.intent.NO
+  transitionToScene: actions.scene.END_CONVERSATION
+onEnter:
+  staticPrompt:
+    candidates:
+    - promptResponse:
+        firstSimple:
+          variants:
+          - speech: Would you like to hear another story?
+        suggestions:
+        - title: "Yes"
+        - title: "No"
+  webhookHandler: whole_story
