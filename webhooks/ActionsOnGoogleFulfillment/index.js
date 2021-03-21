@@ -11,16 +11,16 @@ const db = admin.firestore();
 const app = conversation();
 
 
-function currentData() {
+async function currentData() {
   const teaMap = await db.doc(pathProvider.basePath(new Date("2021-03-08T07:45:00Z"))).get();
   
-  return teaMap.data()
+  return teaMap.data();
 }
 
 app.handle('tea_consumption', async (conv) => {
   console.log('Start scene: Tea consumption');
 
-  const teaCups = currentData().num_tea_boils;
+  const teaCups = (await currentData()).num_tea_boils;
 
   conv.add(teaConsumer.toSpeach(teaCups));
 });
