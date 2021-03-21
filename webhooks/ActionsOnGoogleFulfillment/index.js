@@ -2,6 +2,7 @@ const {conversation} = require('@assistant/conversation');
 const functions = require('firebase-functions');
 const teaConsumer = require('./tea_consumer');
 const pathProvider = require('./path_provider');
+const timeUtils = require('./time_utils');
 
 
 const admin = require('firebase-admin');
@@ -25,9 +26,19 @@ app.handle('tea_consumption', async (conv) => {
   conv.add(teaConsumer.toSpeach(teaCups));
 });
 
-app.handle('wake_up_time', (conv) => {
-  conv.add('Today you have woken up a 11:23 am.');
+app.handle('wake_up_time', async (conv) => {
+  const wakeUpTime = (await currentData()).wake_up_time.toDate();
+  conv.add(`Today you have woken up at a ${timeUtils.toSimpleTime(wakeUpTime)}.`);
+});
+
+app.handle('whole_story', async (conv) => {
+  const allData = await currentData();
+
+  conv.add(
+  `Today you have woken up at a ${timeUtils.toSimpleTime(allData.wake_up_time.toDate())}. 
+  Since then you have made ${allData.num_tea_boils} cups of tea.
+  Current temperature at home is ${allData.temperature_inside.current} degrees celsius.`
+  );
 });
 
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app);
-
