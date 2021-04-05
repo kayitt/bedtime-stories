@@ -5,6 +5,10 @@ import pandas as pd
 from pandas.testing import assert_series_equal
 
 
+class HomeAPI(object):
+    pass
+
+
 class TestExtractor(TestCase):
 
     def test_accepts_connection(self):
@@ -29,6 +33,11 @@ class TestExtractor(TestCase):
         extracted_data = Extractor(connection="connection").extract(query="another_query")
 
         assert_series_equal(data, extracted_data)
+        
+    def test_extractor_accepts_api(self):
+        Extractor(connection=HomeAPI()).extract(query="another_query")
+        
+        
 
 
 
