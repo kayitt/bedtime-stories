@@ -1,6 +1,0 @@
-handlers:
-- name: tea_consumption
-- name: wake_up_time
-- name: whole_story
-inlineCloudFunction:
-  executeFunction: ActionsOnGoogleFulfillment
