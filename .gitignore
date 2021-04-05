@@ -1,2 +1,8 @@
 node_modules/
 
+.idea
+.pre-commit-config.yaml
+.python-version
+drafts
+**/__pycache__/
+
