@@ -10,7 +10,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  test:
+  test-functions:
     name: Functions
     runs-on: ubuntu-latest
     steps:
@@ -24,9 +24,7 @@ jobs:
           npm install
           npm test
           npm run lint
-
-jobs:
-  test:
+  test-etl:
     name: ETL
     runs-on: ubuntu-latest
     steps:
