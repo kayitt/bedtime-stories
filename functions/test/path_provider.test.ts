@@ -1,5 +1,7 @@
 var expect = require("chai").expect;
-var pathProvider = require("../../webhooks/ActionsOnGoogleFulfillment/path_provider.js");
+import {PathProvider} from "../src/path_provider";
+
+const pathProvider = new PathProvider();
 
 describe("path provider", function () {
 
