@@ -5,6 +5,8 @@ intentEvents:
   transitionToScene: Tea
 - intent: WakeUp
   transitionToScene: WakeUp
+- intent: WholeStory
+  transitionToScene: WholeStory
 onEnter:
   staticPrompt:
     candidates:
@@ -16,4 +18,5 @@ onEnter:
         suggestions:
         - title: Tea consumption
         - title: Wake up time
+        - title: Whole story
         - title: "No"

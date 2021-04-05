@@ -6,7 +6,7 @@ describe("tea comsumer", function () {
   it("consumes plural number of tea", function () {
     let speach = consumer.toSpeach(4);
 
-    expect(speach).to.equal("You have conumed 4 cups of tea.");
+    expect(speach).to.equal("You have consumed 4 cups of tea.");
   });
 
   it("consumes no tea", function () {

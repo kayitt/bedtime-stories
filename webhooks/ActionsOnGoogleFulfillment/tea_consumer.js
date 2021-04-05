@@ -6,6 +6,6 @@ exports.toSpeach = function(cups) {
         return "You have drank a tea.";
     }
 
-    return `You have conumed ${cups} cups of tea.`;
+    return `You have consumed ${cups} cups of tea.`;
   
   };
