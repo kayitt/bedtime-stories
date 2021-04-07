@@ -23,8 +23,7 @@ class Transformer:
     def __init__(self, transformers: List[CurrentTemperatureTransformer]):
         self.transformers = transformers
 
-    def create_report(self):
-        builder = Builder()
+    def create_report(self, builder: Builder):
         for transformer in self.transformers:
             transformer.transform(builder)
         return Model(current_temperature=21)
