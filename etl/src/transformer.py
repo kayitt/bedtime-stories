@@ -1,12 +1,14 @@
 from typing import List
-
-from etl.src.data_classes import Model
 from etl.src.extractor import TimeSeriesExtractor
+from etl.src.data_classes import Model
 
 
 class Builder:
     def __init__(self):
         self.current_temperature = None
+
+    def build(self):
+        return Model(current_temperature=self.current_temperature)
 
 
 class CurrentTemperatureTransformer:
