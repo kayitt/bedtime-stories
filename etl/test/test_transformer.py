@@ -1,22 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 import pandas as pd
-from etl.src.extractor import TimeSeriesExtractor
-
-
-class Builder:
-    def __init__(self):
-        self.current_temperature = None
-
-
-class CurrentTemperatureTransformer:
-    def __init__(self, extractor: TimeSeriesExtractor):
-        self.extractor = extractor
-        self.query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 22h"""
-
-    def transform(self, builder: Builder):
-        time_series = self.extractor.extract(query=self.query)
-        builder.current_temperature = time_series.last(offset="ms").values[0]
+from etl.src.transformer import Builder, CurrentTemperatureTransformer
 
 
 class TestCurrentTemperatureTransformer(TestCase):
