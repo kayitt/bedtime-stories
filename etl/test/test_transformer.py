@@ -68,3 +68,6 @@ class TestTransformer(TestCase):
         self.transformer.create_report(Builder())
 
         self.current_temp_mock.transform.assert_called()
+
+    # def test_returns_correct_current_temperature(self):
+    #    self.assertEqual(builder.current_temperature, model.current_temperature)
