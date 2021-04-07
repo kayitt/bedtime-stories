@@ -1,7 +1,19 @@
 from unittest import TestCase
 from unittest.mock import Mock
 import pandas as pd
-from etl.src.transformer import Builder, CurrentTemperatureTransformer, Transformer
+
+from etl.src.data_classes import Model
+from etl.src.maintransformer import (
+    Builder,
+    CurrentTemperatureTransformer,
+    MainTransformer,
+    Transformer,
+)
+
+
+class StubTransformer(Transformer):
+    def transform(self, builder: Builder):
+        builder.current_temperature = 21
 
 
 class TestCurrentTemperatureTransformer(TestCase):
@@ -54,12 +66,14 @@ class TestCurrentTemperatureTransformer(TestCase):
 class TestTransformer(TestCase):
     def setUp(self):
         self.current_temp_mock = Mock()
-        self.transformer = Transformer(transformers=[self.current_temp_mock])
+        self.transformer = MainTransformer(transformers=[self.current_temp_mock])
 
     def test_can_create_report(self):
         self.transformer.create_report(Builder())
 
     def test_returns_model_with_current_temperature(self):
+        self.transformer = MainTransformer(transformers=[StubTransformer()])
+
         model = self.transformer.create_report(Builder())
 
         self.assertIsNotNone(model.current_temperature)
@@ -69,5 +83,10 @@ class TestTransformer(TestCase):
 
         self.current_temp_mock.transform.assert_called()
 
-    # def test_returns_correct_current_temperature(self):
-    #    self.assertEqual(builder.current_temperature, model.current_temperature)
+    def test_returns_correct_current_temperature(self):
+        builder_mock = Mock()
+        builder_mock.build.return_value = Model(current_temperature=2991)
+
+        model = self.transformer.create_report(builder_mock)
+
+        self.assertEqual(Model(current_temperature=2991), model)

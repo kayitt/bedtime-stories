@@ -1,6 +1,7 @@
 from typing import List
 from etl.src.extractor import TimeSeriesExtractor
 from etl.src.data_classes import Model
+from abc import ABC, abstractmethod
 
 
 class Builder:
@@ -11,7 +12,13 @@ class Builder:
         return Model(current_temperature=self.current_temperature)
 
 
-class CurrentTemperatureTransformer:
+class Transformer(ABC):
+    @abstractmethod
+    def transform(self, builder: Builder):
+        pass
+
+
+class CurrentTemperatureTransformer(Transformer):
     def __init__(self, extractor: TimeSeriesExtractor):
         self.extractor = extractor
         self.query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 22h"""
@@ -21,11 +28,12 @@ class CurrentTemperatureTransformer:
         builder.current_temperature = time_series.last(offset="ms").values[0]
 
 
-class Transformer:
-    def __init__(self, transformers: List[CurrentTemperatureTransformer]):
+class MainTransformer:
+    def __init__(self, transformers: List[Transformer]):
         self.transformers = transformers
 
     def create_report(self, builder: Builder):
         for transformer in self.transformers:
             transformer.transform(builder)
-        return Model(current_temperature=21)
+        model = builder.build()
+        return model
