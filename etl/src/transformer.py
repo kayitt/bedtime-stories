@@ -1,3 +1,5 @@
+from typing import List
+
 from etl.src.data_classes import Model
 from etl.src.extractor import TimeSeriesExtractor
 
@@ -18,8 +20,11 @@ class CurrentTemperatureTransformer:
 
 
 class Transformer:
-    def __init__(self, transformers):
+    def __init__(self, transformers: List[CurrentTemperatureTransformer]):
         self.transformers = transformers
 
     def create_report(self):
+        builder = Builder()
+        for transformer in self.transformers:
+            transformer.transform(builder)
         return Model(current_temperature=21)

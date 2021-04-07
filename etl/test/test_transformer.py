@@ -67,4 +67,4 @@ class TestTransformer(TestCase):
     def test_create_report_runs_current_temperature_transform(self):
         self.transformer.create_report()
 
-        self.current_temp_mock.transform.assert_called
+        self.current_temp_mock.transform.assert_called()
