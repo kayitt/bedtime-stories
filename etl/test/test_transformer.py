@@ -1,10 +1,14 @@
 from unittest import TestCase
 
 
-class Transformer(object):
-    pass
+class CurrentTemperatureTransformer(object):
+    def transform(self, builder):
+        pass
 
 
-class TestTransformer(TestCase):
+class TestCurrentTemperatureTransformer(TestCase):
     def test_exists(self):
-        Transformer()
+        CurrentTemperatureTransformer()
+
+    def test_has_transform_accepts_builder(self):
+        CurrentTemperatureTransformer().transform(builder="builder")
