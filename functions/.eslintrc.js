@@ -29,5 +29,6 @@ module.exports = {
     "quotes": ["error", "double"],
     "max-len": ["error", {"code": 120}],
     "require-jsdoc": 0,
+    "camelcase": "off",
   },
 };

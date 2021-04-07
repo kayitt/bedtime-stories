@@ -1,5 +1,5 @@
 export class TimeUtils {
-  formatDate(date: Date): string {
+  formatTime(date: Date): string {
     let hours = date.getHours();
     const minutes = date.getMinutes();
     const amPm = hours >= 12 ? "PM" : "AM";
