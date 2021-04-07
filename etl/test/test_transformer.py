@@ -53,12 +53,12 @@ class TestCurrentTemperatureTransformer(TestCase):
 
 class TestTransformer(TestCase):
     def test_transformer_exists(self):
-        Transformer()
+        Transformer(transformers="list")
 
     def test_can_create_report(self):
-        Transformer().create_report()
+        Transformer(transformers="list").create_report()
 
     def test_returns_model_with_current_temperature(self):
-        model = Transformer().create_report()
+        model = Transformer(transformers="list").create_report()
 
         self.assertIsNotNone(model.current_temperature)

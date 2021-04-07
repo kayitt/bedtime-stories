@@ -18,5 +18,8 @@ class CurrentTemperatureTransformer:
 
 
 class Transformer:
+    def __init__(self, transformers):
+        self.transformers = transformers
+
     def create_report(self):
         return Model(current_temperature=21)
