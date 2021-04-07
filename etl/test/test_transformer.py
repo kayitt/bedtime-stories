@@ -15,8 +15,8 @@ class CurrentTemperatureTransformer:
         self.query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 22h"""
 
     def transform(self, builder: Builder):
-        builder.current_temperature = 23
-        self.extractor.extract(query=self.query)
+        time_series = self.extractor.extract(query=self.query)
+        builder.current_temperature = time_series.last(offset="ms").values[0]
 
 
 class TestCurrentTemperatureTransformer(TestCase):
@@ -55,3 +55,12 @@ class TestCurrentTemperatureTransformer(TestCase):
         CurrentTemperatureTransformer(self.extractor).transform(builder)
 
         self.assertEqual(23, builder.current_temperature)
+
+    def test_current_temperature_is_latest_value_another(self):
+        index = pd.to_datetime([4, 9], unit="ms")
+        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+
+        builder = Builder()
+        CurrentTemperatureTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(21, builder.current_temperature)
