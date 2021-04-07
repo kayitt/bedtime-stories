@@ -53,7 +53,8 @@ class TestCurrentTemperatureTransformer(TestCase):
 
 class TestTransformer(TestCase):
     def setUp(self):
-        self.transformer = Transformer(transformers="list")
+        self.current_temp_mock = Mock()
+        self.transformer = Transformer(transformers=[self.current_temp_mock])
 
     def test_can_create_report(self):
         self.transformer.create_report()
@@ -62,3 +63,8 @@ class TestTransformer(TestCase):
         model = self.transformer.create_report()
 
         self.assertIsNotNone(model.current_temperature)
+
+    def test_create_report_runs_current_temperature_transform(self):
+        self.transformer.create_report()
+
+        self.current_temp_mock.transform.assert_called
