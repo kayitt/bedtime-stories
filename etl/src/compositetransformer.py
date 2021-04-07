@@ -11,6 +11,9 @@ class Builder:
     def build(self):
         return Model(current_temperature=self.current_temperature)
 
+    def __eq__(self, other):
+        return self.current_temperature == other.current_temperature
+
 
 class Transformer(ABC):
     @abstractmethod
@@ -28,12 +31,20 @@ class CurrentTemperatureTransformer(Transformer):
         builder.current_temperature = time_series.last(offset="ms").values[0]
 
 
-class MainTransformer:
+class CompositeTransformer(Transformer):
     def __init__(self, transformers: List[Transformer]):
         self.transformers = transformers
 
-    def create_report(self, builder: Builder):
+    def transform(self, builder: Builder):
         for transformer in self.transformers:
             transformer.transform(builder)
-        model = builder.build()
-        return model
+
+
+class Director:
+    def __init__(self, transformer: Transformer):
+        self.transformer = transformer
+
+    def create_report(self):
+        builder = Builder()
+        self.transformer.transform(builder)
+        return builder.build()

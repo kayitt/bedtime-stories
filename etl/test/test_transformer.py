@@ -1,14 +1,14 @@
 from unittest import TestCase
 from unittest.mock import Mock
 import pandas as pd
-
-from etl.src.data_classes import Model
-from etl.src.maintransformer import (
+from etl.src.compositetransformer import (
     Builder,
     CurrentTemperatureTransformer,
-    MainTransformer,
+    CompositeTransformer,
     Transformer,
+    Director,
 )
+from etl.src.data_classes import Model
 
 
 class StubTransformer(Transformer):
@@ -63,30 +63,30 @@ class TestCurrentTemperatureTransformer(TestCase):
         self.assertEqual(21, builder.current_temperature)
 
 
-class TestTransformer(TestCase):
+class TestCompositeTransformer(TestCase):
     def setUp(self):
         self.current_temp_mock = Mock()
-        self.transformer = MainTransformer(transformers=[self.current_temp_mock])
+        self.transformer = CompositeTransformer(transformers=[self.current_temp_mock])
 
     def test_can_create_report(self):
-        self.transformer.create_report(Builder())
-
-    def test_returns_model_with_current_temperature(self):
-        self.transformer = MainTransformer(transformers=[StubTransformer()])
-
-        model = self.transformer.create_report(Builder())
-
-        self.assertIsNotNone(model.current_temperature)
+        self.transformer.transform(Builder())
 
     def test_create_report_runs_current_temperature_transform(self):
-        self.transformer.create_report(Builder())
+        self.transformer.transform(Builder())
 
         self.current_temp_mock.transform.assert_called()
 
-    def test_returns_correct_current_temperature(self):
-        builder_mock = Mock()
-        builder_mock.build.return_value = Model(current_temperature=2991)
 
-        model = self.transformer.create_report(builder_mock)
+class TestDirector(TestCase):
+    def test_has_create_report_accepts_transformer(self):
+        mock_transformer = Mock()
+        Director(mock_transformer).create_report()
 
-        self.assertEqual(Model(current_temperature=2991), model)
+        mock_transformer.transform.assert_called_with(Builder())
+
+    def test_create_report_creates_model(self):
+        expected_model = Model(current_temperature=21)
+
+        model = Director(StubTransformer()).create_report()
+
+        self.assertEqual(expected_model, model)
