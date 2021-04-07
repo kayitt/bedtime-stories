@@ -23,7 +23,7 @@ class HomeAPI:
         return json.loads(response.content)
 
 
-class Extractor:
+class TimeSeriesExtractor:
     def __init__(self, home_api: HomeAPI):
         self.home_api = home_api
 
