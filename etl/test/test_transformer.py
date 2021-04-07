@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 import pandas as pd
-from etl.src.transformer import Builder, CurrentTemperatureTransformer
+from etl.src.transformer import Builder, CurrentTemperatureTransformer, Transformer
 
 
 class TestCurrentTemperatureTransformer(TestCase):
@@ -49,3 +49,16 @@ class TestCurrentTemperatureTransformer(TestCase):
         CurrentTemperatureTransformer(self.extractor).transform(builder)
 
         self.assertEqual(21, builder.current_temperature)
+
+
+class TestTransformer(TestCase):
+    def test_transformer_exists(self):
+        Transformer()
+
+    def test_can_create_report(self):
+        Transformer().create_report()
+
+    def test_returns_model_with_current_temperature(self):
+        model = Transformer().create_report()
+
+        self.assertIsNotNone(model.current_temperature)
