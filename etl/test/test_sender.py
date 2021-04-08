@@ -33,6 +33,12 @@ class UnableToLoadException(Exception):
     pass
 
 
+class Nadadenada(Exception):
+    """Raised when upload to Firestore fails"""
+
+    pass
+
+
 class TestSender(TestCase):
     def setUp(self):
         self.firestore_sender = Mock()
