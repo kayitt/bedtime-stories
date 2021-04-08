@@ -10,8 +10,8 @@ class FirestoreSender:
     def __init__(self, client):
         self.client = client
 
-    def send(self, document, key):
-        self.client.collection(u"home").document(key).set(document)
+    def send(self):
+        pass
 
 
 class Sender:
@@ -19,10 +19,8 @@ class Sender:
         self.sender = sender
 
     def send(self, model: Model):
-        document = {"some": "data"}
-        key = datetime.now().strftime("%Y-%m-%d")
         try:
-            self.sender.send(document, key)
+            self.sender.send()
         except:
             raise UnableToLoadException
 
