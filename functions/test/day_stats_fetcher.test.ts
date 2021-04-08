@@ -3,6 +3,7 @@ var expect = chai.expect;
 
 var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
+
 import * as admin from "firebase-admin";
 import { DayStatsFetcher, Fetcher, FirestoreDayStats } from "../src/day_stats_fetcher";
 
@@ -21,13 +22,12 @@ describe("day stats fetcher", function () {
     var result = await fetcher.fetch(new Date());
 
     expect(result.teaBoils).to.equal(1);
-    expect(result.wakeUpTime.toISOString).to
-      .equal(new Date("2021-03-08T07:45:00Z").toISOString);
+    expect(result.wakeUpTime).deep.equal(new Date("2021-03-08T07:45:00Z"));
     expect(result.temperatureInside.value).to.equal(1);
     expect(result.minTemperatureOutside.value).to.equal(20.1);
-    expect(result.minTemperatureOutside.date.toISOString).to.equal(new Date("2021-03-08T07:45:00Z").toISOString);
+    expect(result.minTemperatureOutside.date).deep.equal(new Date("2021-03-08T07:45:00Z"));
     expect(result.maxTemperatureOutside.value).to.equal(21.1);
-    expect(result.maxTemperatureOutside.date.toISOString).to.equal(new Date("2021-03-08T07:45:00Z").toISOString);
+    expect(result.maxTemperatureOutside.date).deep.equal(new Date("2021-03-08T07:45:00Z"));
   });
 
   it("throws when date does not exist", async function () {
