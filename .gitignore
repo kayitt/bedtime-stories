@@ -5,4 +5,5 @@ node_modules/
 .python-version
 drafts
 **/__pycache__/
+etl/assets
 
