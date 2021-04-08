@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest import TestCase
 from unittest.mock import Mock
 
@@ -7,7 +6,7 @@ from google.cloud.firestore_v1.client import Client
 
 
 class FirestoreSender:
-    def __init__(self, client):
+    def __init__(self, client: Client):
         self.client = client
 
     def send(self):
