@@ -19,19 +19,10 @@ class Sender:
         self.sender = sender
 
     def send(self, model: Model):
-        try:
-            self.sender.send()
-        except:
-            raise UnableToLoadException
+        self.sender.send()
 
 
 class UnableToLoadException(Exception):
-    """Raised when upload to Firestore fails"""
-
-    pass
-
-
-class Nadadenada(Exception):
     """Raised when upload to Firestore fails"""
 
     pass
