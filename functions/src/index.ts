@@ -68,7 +68,7 @@ app.handle("whole_story", async (conv) => {
     const demoDate = new Date("2021-03-08T07:45:00Z");
     console.error(`Unable to return the whole story. ${error}`);
 
-    conv.append(`Unable to return the whole story for ${now.toLocaleString()}. `);
+    conv.append(`Unable to return the whole story for ${now.toUTCString()}. `);
     conv.append("Lets have it for a demo date. ");
     conv.append(new WholeStory().say(await await dayFetcher.fetch(demoDate)));
   }
