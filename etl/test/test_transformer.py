@@ -1,7 +1,6 @@
 from unittest import TestCase, skip
 from unittest.mock import Mock
 import pandas as pd
-
 from etl.src.transformer import (
     Builder,
     CurrentTemperatureTransformer,

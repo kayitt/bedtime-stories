@@ -21,6 +21,7 @@ class TestSender(TestCase):
                 model=Model(current_temperature=21, num_tea_boils=4, wake_up_time=45)
             )
 
+
     def test_sender_sends_model_dictionary(self):
         self.firestore_sender = Mock()
 

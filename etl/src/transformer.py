@@ -1,8 +1,6 @@
 from typing import List
 from zoneinfo import ZoneInfo
-
 import pandas as pd
-
 from etl.src.extractor import TimeSeriesExtractor
 from etl.src.data_classes import Model
 from abc import ABC, abstractmethod
