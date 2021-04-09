@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skip
 from unittest.mock import Mock
 import pandas as pd
 from etl.src.transformer import (
@@ -7,13 +7,24 @@ from etl.src.transformer import (
     CompositeTransformer,
     Transformer,
     Director,
+    TeaBoilsTransformer,
+    WakeUpTimeTransformer,
 )
 from etl.src.data_classes import Model
+from zoneinfo import ZoneInfo
+
+
+def _series_to_ts(series: pd.Series):
+    min_ts = series.index.min()
+    min_ts = min_ts.tz_localize("Europe/Berlin")
+    return min_ts.astimezone(ZoneInfo("UTC"))
 
 
 class StubTransformer(Transformer):
     def transform(self, builder: Builder):
         builder.current_temperature = 21
+        builder.num_tea_boils = 4
+        builder.wake_up_time = 10
 
 
 class TestCurrentTemperatureTransformer(TestCase):
@@ -63,6 +74,98 @@ class TestCurrentTemperatureTransformer(TestCase):
         self.assertEqual(21, builder.current_temperature)
 
 
+class TestTeaBoilsTransformer(TestCase):
+    def setUp(self):
+        self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 21h GROUP BY time(5m) fill(0)"""
+        self.extractor = Mock()
+
+    @skip
+    def test_transformed_builder_has_num_tea_boils(self):
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertIsNotNone(builder.num_tea_boils)
+
+    def test_accepts_extractor(self):
+        TeaBoilsTransformer(self.extractor)
+
+    @skip  # Python doesn't like the > operator in combination with a mocked object
+    def test_extract_called_with_tea_boils_query(self):
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.extractor.extract.assert_called_with(query=self.num_tea_boils_query)
+
+    def test_builder_none_tea_boils_before_transformation(self):
+        builder = Builder()
+
+        self.assertIsNone(builder.num_tea_boils)
+
+    def test_num_tea_boils_counts_positive_values(self):
+        index = pd.to_datetime([10, 15, 20], unit="ms")
+        self.extractor.extract.return_value = pd.Series([0, 10, 40], index=index)
+
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(2, builder.num_tea_boils)
+
+    def test_num_tea_boils_counts_positive_values_another(self):
+        index = pd.to_datetime([4, 9], unit="ms")
+        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(2, builder.num_tea_boils)
+
+
+class TestWakeUpTime(TestCase):
+    def setUp(self):
+        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
+        self.extractor = Mock()
+
+    def test_transformed_builder_has_wake_up_time(self):
+        builder = Builder()
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.assertIsNotNone(builder.wake_up_time)
+
+    def test_accepts_extractor(self):
+        CurrentTemperatureTransformer(self.extractor)
+
+    def test_extract_called_with_wake_up_time_query(self):
+        builder = Builder()
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.extractor.extract.assert_called_with(query=self.wake_up_query)
+
+    def test_builder_none_wake_up_time_before_transformation(self):
+        builder = Builder()
+
+        self.assertIsNone(builder.wake_up_time)
+
+    def test_wake_up_time__is_argmin(self):
+        index = pd.to_datetime([1, 4], unit="ms")
+        self.extractor.extract.return_value = pd.Series([34, 21], index=index)
+        builder = Builder()
+        expected_ts = _series_to_ts(pd.Series([23, 21], index=index))
+
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(expected_ts, builder.wake_up_time)
+
+    def test_wake_up_time__is_argmin_another(self):
+        index = pd.to_datetime([4, 9], unit="ms")
+        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+        builder = Builder()
+        expected_ts = _series_to_ts(pd.Series([23, 21], index=index))
+
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(expected_ts, builder.wake_up_time)
+
+
 class TestCompositeTransformer(TestCase):
     def setUp(self):
         self.current_temp_mock = Mock()
@@ -85,7 +188,7 @@ class TestDirector(TestCase):
         mock_transformer.transform.assert_called_with(Builder())
 
     def test_create_report_creates_model(self):
-        expected_model = Model(current_temperature=21)
+        expected_model = Model(current_temperature=21, num_tea_boils=4, wake_up_time=10)
 
         model = Director(StubTransformer()).create_report()
 
