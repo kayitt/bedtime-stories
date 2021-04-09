@@ -8,7 +8,7 @@ class Builder:
     def __init__(self):
         self.current_temperature = None
 
-    def build(self):
+    def build(self) -> Model:
         return Model(current_temperature=self.current_temperature)
 
     def __eq__(self, other):
@@ -44,7 +44,7 @@ class Director:
     def __init__(self, transformer: Transformer):
         self.transformer = transformer
 
-    def create_report(self):
+    def create_report(self) -> Model:
         builder = Builder()
         self.transformer.transform(builder)
         return builder.build()

@@ -62,3 +62,4 @@ urllib3==1.26.4
 virtualenv==20.4.3
 wcwidth==0.2.5
 webencodings==0.5.1
+google-cloud-firestore==2.1.0

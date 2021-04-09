@@ -8,6 +8,6 @@ git pull origin main
 
 echo 'Run ETL' >> /tmp/bedtime_logs.log
 
-python3.9 etl/src/etl.py
+python3.9 etl/src/main.py
 
 echo 'Finished ETL' >> /tmp/bedtime_logs.log
