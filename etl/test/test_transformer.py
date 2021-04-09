@@ -1,12 +1,14 @@
-from unittest import TestCase
+from unittest import TestCase, skip
 from unittest.mock import Mock
 import pandas as pd
+
 from etl.src.transformer import (
     Builder,
     CurrentTemperatureTransformer,
     CompositeTransformer,
     Transformer,
     Director,
+    TeaBoilsTransformer,
 )
 from etl.src.data_classes import Model
 
@@ -61,6 +63,52 @@ class TestCurrentTemperatureTransformer(TestCase):
         CurrentTemperatureTransformer(self.extractor).transform(builder)
 
         self.assertEqual(21, builder.current_temperature)
+
+
+class TestTeaBoilsTransformer(TestCase):
+    def setUp(self):
+        self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 21h GROUP BY time(5m) fill(0)"""
+        self.extractor = Mock()
+
+    @skip
+    def test_transformed_builder_has_num_tea_boils(self):
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertIsNotNone(builder.num_tea_boils)
+
+    def test_accepts_extractor(self):
+        TeaBoilsTransformer(self.extractor)
+
+    @skip  # Python doesn't like the > operator in combination with a mocked object
+    def test_extract_called_with_tea_boils_query(self):
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.extractor.extract.assert_called_with(query=self.num_tea_boils_query)
+
+    def test_builder_none_tea_boils_before_transformation(self):
+        builder = Builder()
+
+        self.assertIsNone(builder.num_tea_boils)
+
+    def test_num_tea_boils_counts_positive_values(self):
+        index = pd.to_datetime([10, 15, 20], unit="ms")
+        self.extractor.extract.return_value = pd.Series([0, 10, 40], index=index)
+
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(2, builder.num_tea_boils)
+
+    def test_num_tea_boils_counts_positive_values_another(self):
+        index = pd.to_datetime([4, 9], unit="ms")
+        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(2, builder.num_tea_boils)
 
 
 class TestCompositeTransformer(TestCase):

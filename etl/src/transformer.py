@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 class Builder:
     def __init__(self):
         self.current_temperature = None
+        self.num_tea_boils = None
 
     def build(self) -> Model:
         return Model(current_temperature=self.current_temperature)
@@ -48,3 +49,13 @@ class Director:
         builder = Builder()
         self.transformer.transform(builder)
         return builder.build()
+
+
+class TeaBoilsTransformer:
+    def __init__(self, extractor: TimeSeriesExtractor):
+        self.extractor = extractor
+        self.query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 21h GROUP BY time(5m) fill(0)"""
+
+    def transform(self, builder: Builder):
+        series = self.extractor.extract(query=self.query)
+        builder.num_tea_boils = sum(series > 0)
