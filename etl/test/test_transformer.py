@@ -9,6 +9,7 @@ from etl.src.transformer import (
     Transformer,
     Director,
     TeaBoilsTransformer,
+    WakeUpTimeTransformer,
 )
 from etl.src.data_classes import Model
 from zoneinfo import ZoneInfo
@@ -118,29 +119,10 @@ class TestTeaBoilsTransformer(TestCase):
         self.assertEqual(2, builder.num_tea_boils)
 
 
-class WakeUpTimeTransformer:
-    def __init__(self, extractor):
-        self.extractor = extractor
-        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
-
-    def transform(self, builder: Builder):
-        series = self.extractor.extract(query=self.wake_up_query)
-        builder.wake_up_time = self._series_to_ts(series)
-
-    @staticmethod
-    def _series_to_ts(series: pd.Series):
-        min_ts = series.index.min()
-        min_ts = min_ts.tz_localize("Europe/Berlin")
-        return min_ts.astimezone(ZoneInfo("UTC"))
-
-
 class TestWakeUpTime(TestCase):
     def setUp(self):
         self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
-
         self.extractor = Mock()
-        # index = pd.to_datetime([17, 15], unit="ms")
-        # self.extractor.extract.return_value = pd.Series([23, 21], index=index)
 
     def test_transformed_builder_has_wake_up_time(self):
         builder = Builder()

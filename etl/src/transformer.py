@@ -1,4 +1,8 @@
 from typing import List
+from zoneinfo import ZoneInfo
+
+import pandas as pd
+
 from etl.src.extractor import TimeSeriesExtractor
 from etl.src.data_classes import Model
 from abc import ABC, abstractmethod
@@ -60,3 +64,19 @@ class TeaBoilsTransformer:
     def transform(self, builder: Builder):
         series = self.extractor.extract(query=self.query)
         builder.num_tea_boils = sum(series > 0)
+
+
+class WakeUpTimeTransformer:
+    def __init__(self, extractor):
+        self.extractor = extractor
+        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
+
+    def transform(self, builder: Builder):
+        series = self.extractor.extract(query=self.wake_up_query)
+        builder.wake_up_time = self._series_to_ts(series)
+
+    @staticmethod
+    def _series_to_ts(series: pd.Series):
+        min_ts = series.index.min()
+        min_ts = min_ts.tz_localize("Europe/Berlin")
+        return min_ts.astimezone(ZoneInfo("UTC"))
