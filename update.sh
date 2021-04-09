@@ -2,10 +2,12 @@
 
 set -e
 
-echo 'Pull' > logs.log
+echo 'Pull' >> /tmp/bedtime_logs.log
 
 git pull origin main
 
-echo 'Run ETL' >> logs.log
+echo 'Run ETL' >> /tmp/bedtime_logs.log
 
 python3.9 etl/src/etl.py
+
+echo 'Finished ETL' >> /tmp/bedtime_logs.log
