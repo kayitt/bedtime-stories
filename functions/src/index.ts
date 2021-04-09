@@ -70,7 +70,7 @@ app.handle("whole_story", async (conv) => {
 
     conv.append(`Unable to return the whole story for ${now.toUTCString()}. `);
     conv.append("Lets have it for a demo date. ");
-    conv.append(new WholeStory().say(await await dayFetcher.fetch(demoDate)));
+    conv.append(new WholeStory().say(await dayFetcher.fetch(demoDate)));
   }
 });
 
