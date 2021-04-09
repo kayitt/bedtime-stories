@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append(".")
+
 from etl.src.transformer import Director, CurrentTemperatureTransformer
 from etl.src.extractor import TimeSeriesExtractor, HomeAPI
 from etl.src.sender import Sender, FirestoreSender
