@@ -2,11 +2,12 @@
 
 set -e
 
-echo 'Pull' >> /tmp/bedtime_logs.log
+
+echo 'Refresh repository'
 
 git pull origin main
 
-echo 'Run ETL' >> /tmp/bedtime_logs.log
+echo 'Run ETL...'
 
 python3.9 etl/src/main.py
 
