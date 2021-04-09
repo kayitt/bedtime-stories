@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock
 from etl.src.data_classes import Model
 from etl.src.sender import Sender, UnableToLoadException
+from pandas import Timestamp
 
 
 class TestSender(TestCase):
@@ -34,5 +35,15 @@ class TestSender(TestCase):
                 "temperature_inside": {"current": 21},
                 "num_tea_boils": 4,
                 "wake_up_time": 45,
+                "temperature_outside": {
+                    "min": {
+                        "ts": Timestamp("2021-04-09 05:27:17.015000+0000", tz="UTC"),
+                        "value": 3,
+                    },
+                    "max": {
+                        "value": 18,
+                        "ts": Timestamp("2021-04-09 14:11:55.015000+0000", tz="UTC"),
+                    },
+                },
             }
         )
