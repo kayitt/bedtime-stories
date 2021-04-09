@@ -18,7 +18,11 @@ class Sender:
 
     def send(self, model: Model):
         self.firestore_sender.send(
-            {"temperature_inside": {"current": model.current_temperature}}
+            {
+                "temperature_inside": {"current": model.current_temperature},
+                "num_tea_boils": model.num_tea_boils,
+                "wake_up_time": model.wake_up_time,
+            }
         )
 
 

@@ -15,7 +15,11 @@ class Builder:
         self.wake_up_time = None
 
     def build(self) -> Model:
-        return Model(current_temperature=self.current_temperature)
+        return Model(
+            current_temperature=self.current_temperature,
+            num_tea_boils=self.num_tea_boils,
+            wake_up_time=self.wake_up_time,
+        )
 
     def __eq__(self, other):
         return self.current_temperature == other.current_temperature
