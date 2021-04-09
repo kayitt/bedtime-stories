@@ -8,6 +8,7 @@ class Builder:
     def __init__(self):
         self.current_temperature = None
         self.num_tea_boils = None
+        self.wake_up_time = None
 
     def build(self) -> Model:
         return Model(current_temperature=self.current_temperature)

@@ -11,6 +11,13 @@ from etl.src.transformer import (
     TeaBoilsTransformer,
 )
 from etl.src.data_classes import Model
+from zoneinfo import ZoneInfo
+
+
+def _series_to_ts(series: pd.Series):
+    min_ts = series.index.min()
+    min_ts = min_ts.tz_localize("Europe/Berlin")
+    return min_ts.astimezone(ZoneInfo("UTC"))
 
 
 class StubTransformer(Transformer):
@@ -109,6 +116,71 @@ class TestTeaBoilsTransformer(TestCase):
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.assertEqual(2, builder.num_tea_boils)
+
+
+class WakeUpTimeTransformer:
+    def __init__(self, extractor):
+        self.extractor = extractor
+        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
+
+    def transform(self, builder: Builder):
+        series = self.extractor.extract(query=self.wake_up_query)
+        builder.wake_up_time = self._series_to_ts(series)
+
+    @staticmethod
+    def _series_to_ts(series: pd.Series):
+        min_ts = series.index.min()
+        min_ts = min_ts.tz_localize("Europe/Berlin")
+        return min_ts.astimezone(ZoneInfo("UTC"))
+
+
+class TestWakeUpTime(TestCase):
+    def setUp(self):
+        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
+
+        self.extractor = Mock()
+        # index = pd.to_datetime([17, 15], unit="ms")
+        # self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+
+    def test_transformed_builder_has_wake_up_time(self):
+        builder = Builder()
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.assertIsNotNone(builder.wake_up_time)
+
+    def test_accepts_extractor(self):
+        CurrentTemperatureTransformer(self.extractor)
+
+    def test_extract_called_with_wake_up_time_query(self):
+        builder = Builder()
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.extractor.extract.assert_called_with(query=self.wake_up_query)
+
+    def test_builder_none_wake_up_time_before_transformation(self):
+        builder = Builder()
+
+        self.assertIsNone(builder.wake_up_time)
+
+    def test_wake_up_time__is_argmin(self):
+        index = pd.to_datetime([1, 4], unit="ms")
+        self.extractor.extract.return_value = pd.Series([34, 21], index=index)
+        builder = Builder()
+        expected_ts = _series_to_ts(pd.Series([23, 21], index=index))
+
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(expected_ts, builder.wake_up_time)
+
+    def test_wake_up_time__is_argmin_another(self):
+        index = pd.to_datetime([4, 9], unit="ms")
+        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+        builder = Builder()
+        expected_ts = _series_to_ts(pd.Series([23, 21], index=index))
+
+        WakeUpTimeTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(expected_ts, builder.wake_up_time)
 
 
 class TestCompositeTransformer(TestCase):
