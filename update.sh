@@ -2,19 +2,19 @@
 
 set -e
 
-# echo 'Upgrade pip'
+echo 'Upgrade pip'
 
-# python3.9 -m pip install --upgrade pip
+python3.9 -m pip install --upgrade pip
 
-# echo 'Install dependencies'
+echo 'Install dependencies'
 
-# SCRIPT=`realpath $0`
-# SCRIPTPATH=`dirname $SCRIPT`
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
 
-# pip install -r $SCRIPTPATH/etl/requirements.txt
+pip install -r $SCRIPTPATH/etl/requirements.txt
 
 echo 'Run ETL...'
 
-python3.9 etl/src/main.py
+python3.9 $SCRIPTPATH/etl/src/main.py
 
 echo 'Run ETL... DONE!'
