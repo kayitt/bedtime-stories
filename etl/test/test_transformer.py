@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 
 
 def _series_to_ts(series: pd.Series):
-    min_ts = series[series > 0].index.min()
+    min_ts = series.index.min()
     min_ts = min_ts.tz_localize("Europe/Berlin")
     return min_ts.astimezone(ZoneInfo("UTC"))
 
@@ -191,7 +191,6 @@ class TestWakeUpTime(TestCase):
         self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
         self.extractor = MagicMock()
 
-    @skip
     def test_transformed_builder_has_wake_up_time(self):
         builder = Builder()
         WakeUpTimeTransformer(self.extractor).transform(builder)
@@ -201,7 +200,6 @@ class TestWakeUpTime(TestCase):
     def test_accepts_extractor(self):
         CurrentTemperatureTransformer(self.extractor)
 
-    @skip  # MagicMock and int comparison
     def test_extract_called_with_wake_up_time_query(self):
         builder = Builder()
         WakeUpTimeTransformer(self.extractor).transform(builder)
@@ -214,8 +212,8 @@ class TestWakeUpTime(TestCase):
         self.assertIsNone(builder.wake_up_time)
 
     def test_wake_up_time_is_argmin(self):
-        index = pd.to_datetime([1, 4, 5], unit="ms")
-        series = pd.Series([0, 34, 21], index=index)
+        index = pd.to_datetime([4, 5], unit="ms")
+        series = pd.Series([34, 21], index=index)
         self.extractor.extract.return_value = series
         builder = Builder()
         expected_ts = _series_to_ts(series)
