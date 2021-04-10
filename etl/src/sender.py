@@ -24,16 +24,7 @@ class Sender:
                 "temperature_inside": {"current": model.current_temperature},
                 "num_tea_boils": model.num_tea_boils,
                 "wake_up_time": model.wake_up_time,
-                "temperature_outside": {
-                    "min": {
-                        "ts": Timestamp("2021-04-09 05:27:17.015000+0000", tz="UTC"),
-                        "value": 3,
-                    },
-                    "max": {
-                        "value": 18,
-                        "ts": Timestamp("2021-04-09 14:11:55.015000+0000", tz="UTC"),
-                    },
-                },
+                "temperature_outside": model.outside_temperature,
             }
         )
 
