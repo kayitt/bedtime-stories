@@ -8,6 +8,7 @@ from etl.src.transformer import (
     TeaBoilsTransformer,
     WakeUpTimeTransformer,
     CompositeTransformer,
+    OutsideTemperatureTransformer,
 )
 from etl.src.extractor import TimeSeriesExtractor, HomeAPI
 from etl.src.sender import Sender, FirestoreSender
@@ -22,8 +23,11 @@ def report():
     current_temp = CurrentTemperatureTransformer(extractor)
     num_tea_boils = TeaBoilsTransformer(extractor)
     wake_up_time = WakeUpTimeTransformer(extractor)
+    outside_temperature = OutsideTemperatureTransformer(extractor)
 
-    composite = CompositeTransformer([current_temp, num_tea_boils, wake_up_time])
+    composite = CompositeTransformer(
+        [current_temp, num_tea_boils, wake_up_time, outside_temperature]
+    )
 
     director = Director(composite)
 

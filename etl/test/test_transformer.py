@@ -9,6 +9,7 @@ from etl.src.transformer import (
     Director,
     TeaBoilsTransformer,
     WakeUpTimeTransformer,
+    OutsideTemperatureTransformer,
 )
 from etl.src.data_classes import Model
 from zoneinfo import ZoneInfo
@@ -90,34 +91,6 @@ class TestCurrentTemperatureTransformer(TestCase):
         CurrentTemperatureTransformer(self.extractor).transform(builder)
 
         self.assertEqual(21, builder.current_temperature)
-
-
-class OutsideTemperatureTransformer:
-    def __init__(self, extractor):
-        self.extractor = extractor
-        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 22h"""
-
-    def transform(self, builder: Builder):
-        series = self.extractor.extract(query=self.outside_temperature_query)
-        builder.outside_temperature = self._outside_temperature(series)
-        print(builder.outside_temperature)
-
-    @staticmethod
-    def _outside_temperature(s: pd.Series):
-        min_temp = s.min()
-        min_ts = s[s == min_temp].index[0]
-        max_temp = s.max()
-        max_ts = s[s == max_temp].index[0]
-        return {
-            "min": {
-                "ts": min_ts,
-                "value": float(min_temp),
-            },
-            "max": {
-                "value": max_ts,
-                "ts": float(max_temp),
-            },
-        }
 
 
 class TestOutsideTemperatureTransformer(TestCase):
