@@ -36,7 +36,7 @@ class CurrentTemperatureTransformer(Transformer):
 
     def transform(self, builder: Builder):
         time_series = self.extractor.extract(query=self.query)
-        builder.current_temperature = time_series.last(offset="ms").values[0]
+        builder.current_temperature = float(time_series.last(offset="ms").values[0])
 
 
 class CompositeTransformer(Transformer):
