@@ -9,16 +9,16 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH
 
-# echo 'Upgrade pip'
+echo 'Upgrade pip'
 
-# python3.9 -m pip install --upgrade pip
+/usr/local/bin/python3.9 -m pip install --upgrade pip
 
-# echo 'Install dependencies'
+echo 'Install dependencies'
 
-# pip install -r etl/requirements.txt
+$HOME/.local/bin/pip install -r etl/requirements.txt
 
 echo 'Run ETL...'
 
-python3.9 etl/src/main.py
+/usr/local/bin/python3.9 etl/src/main.py
 
 echo 'Run ETL... DONE!'
