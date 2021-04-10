@@ -95,7 +95,6 @@ class OutsideTemperatureTransformer:
     def transform(self, builder: Builder):
         series = self.extractor.extract(query=self.outside_temperature_query)
         builder.outside_temperature = self._outside_temperature(series)
-        print(builder.outside_temperature)
 
     @staticmethod
     def _outside_temperature(s: pd.Series):
