@@ -11,14 +11,17 @@ class Builder:
         self.current_temperature = None
         self.num_tea_boils = None
         self.wake_up_time = None
+        self.outside_temperature = None
 
     def build(self) -> Model:
         return Model(
             current_temperature=self.current_temperature,
             num_tea_boils=self.num_tea_boils,
             wake_up_time=self.wake_up_time,
+            outside_temperature=self.outside_temperature,
         )
 
+    # todo: equality
     def __eq__(self, other):
         return self.current_temperature == other.current_temperature
 
@@ -82,3 +85,30 @@ class WakeUpTimeTransformer:
         min_ts = series.index.min()
         min_ts = min_ts.tz_localize("Europe/Berlin")
         return min_ts.astimezone(ZoneInfo("UTC"))
+
+
+class OutsideTemperatureTransformer:
+    def __init__(self, extractor):
+        self.extractor = extractor
+        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 22h"""
+
+    def transform(self, builder: Builder):
+        series = self.extractor.extract(query=self.outside_temperature_query)
+        builder.outside_temperature = self._outside_temperature(series)
+
+    @staticmethod
+    def _outside_temperature(s: pd.Series):
+        min_temp = s.min()
+        min_ts = s[s == min_temp].index[0]
+        max_temp = s.max()
+        max_ts = s[s == max_temp].index[0]
+        return {
+            "min": {
+                "ts": min_ts,
+                "value": float(min_temp),
+            },
+            "max": {
+                "value": max_ts,
+                "ts": float(max_temp),
+            },
+        }
