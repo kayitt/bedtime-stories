@@ -2,6 +2,8 @@
 
 set -e
 
+echo 'Go to the project'
+
 SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 
