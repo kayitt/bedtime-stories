@@ -1,13 +1,23 @@
 export class TimeUtils {
-  formatTime(date: Date): string {
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const amPm = hours >= 12 ? "PM" : "AM";
+  formatUtcTime(date: Date): string {
+    const result = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC",
+    });
 
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    const minutesString = minutes < 10 ? "0" + minutes : minutes;
+    return result;
+  }
 
-    return `${hours}:${minutesString} ${amPm}`;
+  formatLocalTime(date: Date): string {
+    const result = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Europe/Berlin",
+    });
+
+    return result;
   }
 }
