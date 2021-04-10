@@ -18,7 +18,7 @@ class Builder:
             current_temperature=self.current_temperature,
             num_tea_boils=self.num_tea_boils,
             wake_up_time=self.wake_up_time,
-            # outside_temperature=self.outside_temperature
+            outside_temperature=self.outside_temperature,
         )
 
     # todo: equality

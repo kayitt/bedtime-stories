@@ -42,6 +42,7 @@ class StubTransformer(Transformer):
         builder.current_temperature = 21
         builder.num_tea_boils = 4
         builder.wake_up_time = 10
+        builder.outside_temperature = 0
 
 
 class TestCurrentTemperatureTransformer(TestCase):
@@ -280,7 +281,12 @@ class TestDirector(TestCase):
         mock_transformer.transform.assert_called_with(Builder())
 
     def test_create_report_creates_model(self):
-        expected_model = Model(current_temperature=21, num_tea_boils=4, wake_up_time=10)
+        expected_model = Model(
+            current_temperature=21,
+            num_tea_boils=4,
+            wake_up_time=10,
+            outside_temperature=0,
+        )
 
         model = Director(StubTransformer()).create_report()
 
