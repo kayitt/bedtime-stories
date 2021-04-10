@@ -82,7 +82,7 @@ class WakeUpTimeTransformer:
 
     @staticmethod
     def _series_to_ts(series: pd.Series):
-        min_ts = series[series > 0].index.min()
+        min_ts = series.index.min()
         min_ts = min_ts.tz_localize("Europe/Berlin")
         return min_ts.astimezone(ZoneInfo("UTC"))
 
