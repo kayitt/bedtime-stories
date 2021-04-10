@@ -1,5 +1,5 @@
 from unittest import TestCase, skip
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 import pandas as pd
 from etl.src.transformer import (
     Builder,
@@ -18,6 +18,23 @@ def _series_to_ts(series: pd.Series):
     min_ts = series.index.min()
     min_ts = min_ts.tz_localize("Europe/Berlin")
     return min_ts.astimezone(ZoneInfo("UTC"))
+
+
+def _outside_temperature(s):
+    min_temp = s.min()
+    min_ts = s[s == min_temp].index[0]
+    max_temp = s.max()
+    max_ts = s[s == max_temp].index[0]
+    return {
+        "min": {
+            "ts": min_ts,
+            "value": float(min_temp),
+        },
+        "max": {
+            "value": max_ts,
+            "ts": float(max_temp),
+        },
+    }
 
 
 class StubTransformer(Transformer):
@@ -74,6 +91,81 @@ class TestCurrentTemperatureTransformer(TestCase):
         self.assertEqual(21, builder.current_temperature)
 
 
+class OutsideTemperatureTransformer:
+    def __init__(self, extractor):
+        self.extractor = extractor
+        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 22h"""
+
+    def transform(self, builder: Builder):
+        series = self.extractor.extract(query=self.outside_temperature_query)
+        builder.outside_temperature = self._outside_temperature(series)
+        print(builder.outside_temperature)
+
+    @staticmethod
+    def _outside_temperature(s: pd.Series):
+        min_temp = s.min()
+        min_ts = s[s == min_temp].index[0]
+        max_temp = s.max()
+        max_ts = s[s == max_temp].index[0]
+        return {
+            "min": {
+                "ts": min_ts,
+                "value": float(min_temp),
+            },
+            "max": {
+                "value": max_ts,
+                "ts": float(max_temp),
+            },
+        }
+
+
+class TestOutsideTemperatureTransformer(TestCase):
+    def setUp(self):
+        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 22h"""
+
+        self.extractor = MagicMock()
+
+    def test_transformed_builder_has_outside_temperature(self):
+        builder = Builder()
+        OutsideTemperatureTransformer(self.extractor).transform(builder)
+
+        self.assertIsNotNone(builder.outside_temperature)
+
+    def test_accepts_extractor(self):
+        OutsideTemperatureTransformer(self.extractor)
+
+    def test_extract_called_with_current_temperature_query(self):
+        builder = Builder()
+        OutsideTemperatureTransformer(self.extractor).transform(builder)
+
+        self.extractor.extract.assert_called_with(query=self.outside_temperature_query)
+
+    def test_builder_none_temperature_before_transformation(self):
+        builder = Builder()
+
+        self.assertIsNone(builder.outside_temperature)
+
+    def test_current_temperature_is_min_max_values(self):
+        index = pd.to_datetime([17, 15, 20], unit="ms")
+        series = pd.Series([10, 21, 23], index=index)
+        self.extractor.extract.return_value = series
+
+        builder = Builder()
+        OutsideTemperatureTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(_outside_temperature(series), builder.outside_temperature)
+
+    def test_current_temperature_is_latest_value_another(self):
+        index = pd.to_datetime([10, 11, 12], unit="ms")
+        series = pd.Series([22, 18, 17], index=index)
+        self.extractor.extract.return_value = series
+
+        builder = Builder()
+        OutsideTemperatureTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(_outside_temperature(series), builder.outside_temperature)
+
+
 class TestTeaBoilsTransformer(TestCase):
     def setUp(self):
         self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 21h GROUP BY time(5m) fill(0)"""
@@ -89,7 +181,7 @@ class TestTeaBoilsTransformer(TestCase):
     def test_accepts_extractor(self):
         TeaBoilsTransformer(self.extractor)
 
-    @skip  # Python doesn't like the > operator in combination with a mocked object
+    @skip
     def test_extract_called_with_tea_boils_query(self):
         builder = Builder()
         TeaBoilsTransformer(self.extractor).transform(builder)
