@@ -27,11 +27,11 @@ class WholeStory {
     const maxTemp = stats.maxTemperatureOutside;
     const minTemp = stats.minTemperatureOutside;
 
-    return `Today you have woken up at a ${timeUtils.formatTime(stats.wakeUpTime)}. 
+    return `Today you have woken up at a ${timeUtils.formatLocalTime(stats.wakeUpTime)}. 
     Since then you have made ${stats.teaBoils} cups of tea.
     Current temperature at home is ${stats.temperatureInside.value} degrees celsius.
-    The coldest it has been outside was ${minTemp.value} degrees at ${timeUtils.formatTime(minTemp.date)} 
-    and the warmest ${maxTemp.value} degrees at ${timeUtils.formatTime(maxTemp.date)}.`;
+    The coldest it has been outside was ${minTemp.value} degrees at ${timeUtils.formatLocalTime(minTemp.date)} 
+    and the warmest ${maxTemp.value} degrees at ${timeUtils.formatLocalTime(maxTemp.date)}.`;
   }
 }
 
@@ -51,7 +51,7 @@ app.handle("tea_consumption", async (conv) => {
 app.handle("wake_up_time", async (conv) => {
   try {
     const wakeUpTime = (await currentData()).wakeUpTime;
-    conv.add(`Today you have woken up at a ${timeUtils.formatTime(wakeUpTime)}.`);
+    conv.add(`Today you have woken up at a ${timeUtils.formatLocalTime(wakeUpTime)}.`);
   } catch (error) {
     console.error(`Unable to return wake up time. ${error}`);
     conv.append("Unable to return wake up time.");
@@ -68,7 +68,7 @@ app.handle("whole_story", async (conv) => {
     const demoDate = new Date("2021-03-08T07:45:00Z");
     console.error(`Unable to return the whole story. ${error}`);
 
-    conv.append(`Unable to return the whole story for ${now.toUTCString()}. `);
+    conv.append(`Unable to return the whole story for ${now.toUTCString()} UTC. `);
     conv.append("Lets have it for a demo date. ");
     conv.append(new WholeStory().say(await dayFetcher.fetch(demoDate)));
   }
