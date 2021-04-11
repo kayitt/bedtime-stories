@@ -1,5 +1,4 @@
 from typing import List
-from zoneinfo import ZoneInfo
 import pandas as pd
 from etl.src.extractor import TimeSeriesExtractor
 from etl.src.data_classes import Model
@@ -21,14 +20,18 @@ class Builder:
             outside_temperature=self.outside_temperature,
         )
 
-    # todo: equality
     def __eq__(self, other):
-        return self.current_temperature == other.current_temperature
+        return (
+            (self.current_temperature == other.current_temperature)
+            & (self.num_tea_boils == other.num_tea_boils)
+            & (self.wake_up_time == other.wake_up_time)
+            & (self.outside_temperature == other.outside_temperature)
+        )
 
 
 class Transformer(ABC):
     @abstractmethod
-    def transform(self, builder: Builder):
+    def transform(self, builder: Builder) -> None:
         pass
 
 
@@ -37,7 +40,7 @@ class CurrentTemperatureTransformer(Transformer):
         self.extractor = extractor
         self.query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 24h"""
 
-    def transform(self, builder: Builder):
+    def transform(self, builder: Builder) -> None:
         time_series = self.extractor.extract(query=self.query)
         builder.current_temperature = float(time_series.last(offset="ms").values[0])
 
@@ -46,7 +49,7 @@ class CompositeTransformer(Transformer):
     def __init__(self, transformers: List[Transformer]):
         self.transformers = transformers
 
-    def transform(self, builder: Builder):
+    def transform(self, builder: Builder) -> None:
         for transformer in self.transformers:
             transformer.transform(builder)
 
@@ -66,7 +69,7 @@ class TeaBoilsTransformer:
         self.extractor = extractor
         self.query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
 
-    def transform(self, builder: Builder):
+    def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.query)
         builder.num_tea_boils = sum(series > 0)
 
@@ -76,7 +79,7 @@ class WakeUpTimeTransformer:
         self.extractor = extractor
         self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 24h GROUP BY time(1m) ) WHERE movement > 0"""
 
-    def transform(self, builder: Builder):
+    def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.wake_up_query)
         builder.wake_up_time = series.index.min()
 
@@ -86,12 +89,12 @@ class OutsideTemperatureTransformer:
         self.extractor = extractor
         self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 24h"""
 
-    def transform(self, builder: Builder):
+    def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.outside_temperature_query)
         builder.outside_temperature = self._outside_temperature(series)
 
     @staticmethod
-    def _outside_temperature(s: pd.Series):
+    def _outside_temperature(s: pd.Series) -> dict:
         min_temp = s.min()
         min_ts = s[s == min_temp].index[0]
         max_temp = s.max()
