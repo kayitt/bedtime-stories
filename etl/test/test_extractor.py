@@ -8,8 +8,8 @@ import pandas as pd
 from pandas.testing import assert_series_equal
 
 
-def to_milliseconds(ts: datetime):
-    return ts.timestamp() * 1000
+def to_milliseconds(ts: datetime) -> int:
+    return int(ts.timestamp() * 1000)
 
 
 class TestExtractor(TestCase):

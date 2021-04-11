@@ -2,7 +2,6 @@ from unittest import TestCase
 from unittest.mock import Mock
 from etl.src.data_classes import Model
 from etl.src.sender import Sender, UnableToLoadException
-from pandas import Timestamp
 
 
 class TestSender(TestCase):
