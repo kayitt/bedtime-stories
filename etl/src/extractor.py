@@ -45,7 +45,9 @@ class TimeSeriesExtractor:
 
         return pd.Series(
             [x[1] for x in data_today],
-            index=pd.to_datetime([x[0] for x in data_today], unit="ms"),
+            index=pd.to_datetime([x[0] for x in data_today], unit="ms").tz_localize(
+                tz="UTC"
+            ),
         )
 
     def _last_6am(self, ts: datetime) -> datetime:

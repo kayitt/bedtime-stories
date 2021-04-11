@@ -10,7 +10,7 @@ from etl.src.transformer import (
     CompositeTransformer,
     OutsideTemperatureTransformer,
 )
-from etl.src.extractor import TimeSeriesExtractor, HomeAPI
+from etl.src.extractor import TimeSeriesExtractor, HomeAPI, Clock
 from etl.src.sender import Sender, FirestoreSender
 from google.cloud import firestore
 
@@ -18,7 +18,7 @@ from google.cloud import firestore
 def report():
     client = firestore.Client()
 
-    extractor = TimeSeriesExtractor(HomeAPI())
+    extractor = TimeSeriesExtractor(HomeAPI(), day_start_hour=6, clock=Clock())
 
     current_temp = CurrentTemperatureTransformer(extractor)
     num_tea_boils = TeaBoilsTransformer(extractor)

@@ -78,13 +78,7 @@ class WakeUpTimeTransformer:
 
     def transform(self, builder: Builder):
         series = self.extractor.extract(query=self.wake_up_query)
-        builder.wake_up_time = self._series_to_ts(series)
-
-    @staticmethod
-    def _series_to_ts(series: pd.Series):
-        min_ts = series.index.min()
-        min_ts = min_ts.tz_localize("Europe/Berlin")
-        return min_ts.astimezone(ZoneInfo("UTC"))
+        builder.wake_up_time = series.index.min()
 
 
 class OutsideTemperatureTransformer:

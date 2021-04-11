@@ -17,8 +17,7 @@ from zoneinfo import ZoneInfo
 
 def _series_to_ts(series: pd.Series):
     min_ts = series.index.min()
-    min_ts = min_ts.tz_localize("Europe/Berlin")
-    return min_ts.astimezone(ZoneInfo("UTC"))
+    return min_ts
 
 
 def _outside_temperature(s):

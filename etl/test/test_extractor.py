@@ -50,14 +50,14 @@ class TestExtractor(TestCase):
         self.extractor.extract(query="query")
 
     def test_returns_time_series(self):
-        index = pd.to_datetime([self.ts_2, self.ts_3], unit="ms")
+        index = pd.to_datetime([self.ts_2, self.ts_3], unit="ms").tz_localize("UTC")
         data = pd.Series([502, 535], index=index)
 
         extracted_data = self.extractor.extract(query="query")
         assert_series_equal(data, extracted_data)
 
     def test_returns_different_data(self):
-        index = pd.to_datetime([self.ts_2, self.ts_3], unit="ms")
+        index = pd.to_datetime([self.ts_2, self.ts_3], unit="ms").tz_localize("UTC")
         data = pd.Series([872, 882], index=index)
 
         self.mock_api.query.return_value = {
