@@ -24,8 +24,9 @@ class HomeAPI:
 
 
 class TimeSeriesExtractor:
-    def __init__(self, home_api: HomeAPI):
+    def __init__(self, home_api: HomeAPI, day_start_hour=6):
         self.home_api = home_api
+        self.day_start_hour = day_start_hour
 
     def extract(self, query):
         result_dict = self.home_api.query(query=query)

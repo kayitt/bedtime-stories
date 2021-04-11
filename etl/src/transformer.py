@@ -35,7 +35,7 @@ class Transformer(ABC):
 class CurrentTemperatureTransformer(Transformer):
     def __init__(self, extractor: TimeSeriesExtractor):
         self.extractor = extractor
-        self.query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 22h"""
+        self.query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 24h"""
 
     def transform(self, builder: Builder):
         time_series = self.extractor.extract(query=self.query)
@@ -64,7 +64,7 @@ class Director:
 class TeaBoilsTransformer:
     def __init__(self, extractor: TimeSeriesExtractor):
         self.extractor = extractor
-        self.query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 21h GROUP BY time(5m) fill(0)"""
+        self.query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
 
     def transform(self, builder: Builder):
         series = self.extractor.extract(query=self.query)
@@ -74,7 +74,7 @@ class TeaBoilsTransformer:
 class WakeUpTimeTransformer:
     def __init__(self, extractor):
         self.extractor = extractor
-        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
+        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 24h GROUP BY time(1m) ) WHERE movement > 0"""
 
     def transform(self, builder: Builder):
         series = self.extractor.extract(query=self.wake_up_query)
@@ -90,7 +90,7 @@ class WakeUpTimeTransformer:
 class OutsideTemperatureTransformer:
     def __init__(self, extractor):
         self.extractor = extractor
-        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 22h"""
+        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 24h"""
 
     def transform(self, builder: Builder):
         series = self.extractor.extract(query=self.outside_temperature_query)

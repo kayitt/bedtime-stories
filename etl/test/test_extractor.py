@@ -27,6 +27,9 @@ class TestExtractor(TestCase):
     def test_accepts_connection(self):
         TimeSeriesExtractor(home_api=self.mock_api)
 
+    def test_accepts_day_start_hour(self):
+        TimeSeriesExtractor(home_api=self.mock_api, day_start_hour=6)
+
     def test_has_extract_accepts_query(self):
         TimeSeriesExtractor(home_api=self.mock_api).extract(query="query")
 
