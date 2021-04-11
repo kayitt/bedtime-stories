@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 class Clock:
     @staticmethod
-    def now():
+    def now() -> datetime:
         return datetime.now(tz=ZoneInfo("Europe/Berlin"))
 
 
@@ -19,7 +19,7 @@ class HomeAPI:
         )
         self.params = {"db": "homeassistant", "epoch": "ms"}
 
-    def query(self, query):
+    def query(self, query: str) -> dict:
         self.params["q"] = query
         headers = {
             "Content-Type": "application/json",
