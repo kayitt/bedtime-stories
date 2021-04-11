@@ -12,7 +12,6 @@ from etl.src.transformer import (
     OutsideTemperatureTransformer,
 )
 from etl.src.data_classes import Model
-from zoneinfo import ZoneInfo
 
 
 def _series_to_ts(series: pd.Series):
