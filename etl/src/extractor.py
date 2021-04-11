@@ -1,6 +1,14 @@
 import pandas as pd
 import requests
 import json
+from pandas import Timestamp
+from zoneinfo import ZoneInfo
+
+
+class Clock:
+    @staticmethod
+    def now():
+        return Timestamp.now(tz=ZoneInfo("Europe/Berlin"))
 
 
 class HomeAPI:
@@ -24,7 +32,7 @@ class HomeAPI:
 
 
 class TimeSeriesExtractor:
-    def __init__(self, home_api: HomeAPI, day_start_hour=6):
+    def __init__(self, home_api: HomeAPI, day_start_hour: int, clock: Clock):
         self.home_api = home_api
         self.day_start_hour = day_start_hour
 
