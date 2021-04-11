@@ -108,7 +108,7 @@ class OutsideTemperatureTransformer:
                 "value": float(min_temp),
             },
             "max": {
-                "value": max_ts,
-                "ts": float(max_temp),
+                "ts": max_ts,
+                "value": float(max_temp),
             },
         }

@@ -32,8 +32,8 @@ def _outside_temperature(s):
             "value": float(min_temp),
         },
         "max": {
-            "value": max_ts,
-            "ts": float(max_temp),
+            "value": float(max_temp),
+            "ts": max_ts,
         },
     }
 
