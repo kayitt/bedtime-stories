@@ -17,8 +17,7 @@ from zoneinfo import ZoneInfo
 
 def _series_to_ts(series: pd.Series):
     min_ts = series.index.min()
-    min_ts = min_ts.tz_localize("Europe/Berlin")
-    return min_ts.astimezone(ZoneInfo("UTC"))
+    return min_ts
 
 
 def _outside_temperature(s):
@@ -48,7 +47,7 @@ class StubTransformer(Transformer):
 
 class TestCurrentTemperatureTransformer(TestCase):
     def setUp(self):
-        self.current_temperature_query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 22h"""
+        self.current_temperature_query = """SELECT LAST("value") FROM "autogen"."°C" WHERE ("entity_id" = 'weather_station_temperature') AND time >= now() - 24h"""
 
         self.extractor = Mock()
         index = pd.to_datetime([17, 15], unit="ms")
@@ -95,7 +94,7 @@ class TestCurrentTemperatureTransformer(TestCase):
 
 class TestOutsideTemperatureTransformer(TestCase):
     def setUp(self):
-        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 22h"""
+        self.outside_temperature_query = """SELECT "value" FROM "autogen"."°C" WHERE ("entity_id" = 'outdoor_module_temperature') AND time >= now() - 24h"""
 
         self.extractor = MagicMock()
 
@@ -142,7 +141,7 @@ class TestOutsideTemperatureTransformer(TestCase):
 
 class TestTeaBoilsTransformer(TestCase):
     def setUp(self):
-        self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 21h GROUP BY time(5m) fill(0)"""
+        self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
         self.extractor = Mock()
 
     @skip
@@ -188,7 +187,7 @@ class TestTeaBoilsTransformer(TestCase):
 
 class TestWakeUpTime(TestCase):
     def setUp(self):
-        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 21h GROUP BY time(1m) ) WHERE movement > 0"""
+        self.wake_up_query = """SELECT movement FROM (SELECT count("value") AS movement FROM "state" WHERE ("entity_id" = 'hue_motion_sensor_entrance_motion') AND time >= now() - 24h GROUP BY time(1m) ) WHERE movement > 0"""
         self.extractor = MagicMock()
 
     def test_transformed_builder_has_wake_up_time(self):
