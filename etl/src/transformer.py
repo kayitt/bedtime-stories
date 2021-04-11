@@ -21,7 +21,12 @@ class Builder:
         )
 
     def __eq__(self, other):
-        return self.build() == other.build()
+        return (
+            (self.current_temperature == other.current_temperature)
+            & (self.num_tea_boils == other.num_tea_boils)
+            & (self.wake_up_time == other.wake_up_time)
+            & (self.outside_temperature == other.outside_temperature)
+        )
 
 
 class Transformer(ABC):
