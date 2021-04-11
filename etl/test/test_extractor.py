@@ -1,14 +1,27 @@
+from datetime import datetime
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
+from zoneinfo import ZoneInfo
 
 from etl.src.extractor import TimeSeriesExtractor, Clock
 import pandas as pd
 from pandas.testing import assert_series_equal
 
 
+def to_milliseconds(ts: datetime):
+    return ts.timestamp() * 1000
+
+
 class TestExtractor(TestCase):
     def setUp(self):
         self.mock_api = Mock()
+        tz = ZoneInfo("Europe/Berlin")
+        ts_1 = datetime(2021, 4, 11, hour=5, tzinfo=tz)
+        ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
+        ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
+        self.ts_1 = to_milliseconds(ts_1)
+        self.ts_2 = to_milliseconds(ts_2)
+        self.ts_3 = to_milliseconds(ts_3)
         self.mock_api.query.return_value = {
             "results": [
                 {
@@ -17,13 +30,18 @@ class TestExtractor(TestCase):
                         {
                             "name": "ppm",
                             "columns": ["time", "value"],
-                            "values": [[1615746795223, 502], [1615747408794, 535]],
+                            "values": [
+                                [self.ts_1, 500],
+                                [self.ts_2, 502],
+                                [self.ts_3, 535],
+                            ],
                         }
                     ],
                 }
             ]
         }
         clock = Mock()
+        clock.now.return_value = datetime(2021, 4, 11, hour=23, tzinfo=tz)
         self.extractor = TimeSeriesExtractor(
             home_api=self.mock_api, day_start_hour=6, clock=clock
         )
@@ -32,14 +50,14 @@ class TestExtractor(TestCase):
         self.extractor.extract(query="query")
 
     def test_returns_time_series(self):
-        index = pd.to_datetime([1615746795223, 1615747408794], unit="ms")
+        index = pd.to_datetime([self.ts_2, self.ts_3], unit="ms")
         data = pd.Series([502, 535], index=index)
 
         extracted_data = self.extractor.extract(query="query")
         assert_series_equal(data, extracted_data)
 
     def test_returns_different_data(self):
-        index = pd.to_datetime([1617638207104, 1617641225353], unit="ms")
+        index = pd.to_datetime([self.ts_2, self.ts_3], unit="ms")
         data = pd.Series([872, 882], index=index)
 
         self.mock_api.query.return_value = {
@@ -50,7 +68,11 @@ class TestExtractor(TestCase):
                         {
                             "name": "ppm",
                             "columns": ["time", "value"],
-                            "values": [[1617638207104, 872], [1617641225353, 882]],
+                            "values": [
+                                [self.ts_1, 800],
+                                [self.ts_2, 872],
+                                [self.ts_3, 882],
+                            ],
                         }
                     ],
                 }
@@ -61,15 +83,6 @@ class TestExtractor(TestCase):
 
         assert_series_equal(data, extracted_data)
 
-    def test_returns_filtered_time_series(self):
-        index = pd.to_datetime([1615746795223, 1615747408794], unit="ms")
-        data = pd.Series([502, 535], index=index)
-
-        # extracted_data = TimeSeriesExtractor(home_api=self.mock_api).extract(
-        #    query="query"
-        # )
-        # assert_series_equal(data, extracted_data)
-
 
 class TestClock(TestCase):
     def test_clock_has_now(self):
@@ -77,4 +90,4 @@ class TestClock(TestCase):
 
     def test_now_returns_timestamp(self):
         ts = Clock().now()
-        self.assertIsNotNone(ts.astimezone("UTC"))
+        self.assertIsNotNone(ts.astimezone(ZoneInfo("UTC")))
