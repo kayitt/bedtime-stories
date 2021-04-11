@@ -1,6 +1,6 @@
 from datetime import datetime
 from unittest import TestCase
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock
 from zoneinfo import ZoneInfo
 
 from etl.src.extractor import TimeSeriesExtractor, Clock
