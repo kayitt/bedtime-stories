@@ -78,7 +78,7 @@ class TeaBoilsTransformer:
         series = self.extractor.extract(query=self.query)
         series = pd.concat([pd.Series([0], index=[ts_0]), series])
         print("series format")
-        print(series)
+        print(series.index)
         series = series.sort_index()
         print("series sorted")
 
