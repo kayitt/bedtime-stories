@@ -153,7 +153,6 @@ class TestTeaBoilsTransformer(TestCase):
         self.extractor = Mock()
         tz = ZoneInfo("Europe/Berlin")
         ts_1 = datetime(2021, 4, 11, hour=5, tzinfo=tz)
-        print("==================PRPRRPRP timestamp 1", ts_1)
         ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
         ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
         ts_4 = datetime(2021, 4, 11, hour=23, tzinfo=tz)
@@ -174,8 +173,6 @@ class TestTeaBoilsTransformer(TestCase):
     def test_transformed_builder_has_num_tea_boils(self):
         builder = Builder()
         self.extractor.extract.return_value = self.from_times_to_timeseries(1,2,3,4)
-        print("TEST PROBLEM SERIESS!!!!!!!!!!!!!!!!!!")
-        print(self.from_times_to_timeseries(1,2,3,4))
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.assertIsNotNone(builder.num_tea_boils)
@@ -187,8 +184,6 @@ class TestTeaBoilsTransformer(TestCase):
         builder = Builder()
         index = [self.ts_1, self.ts_2]
         self.extractor.extract.return_value = self.from_times_to_timeseries(1,2,3,4)
-        print("PASSING", pd.Series([0, 23], index=index))
-        print('BORKENNN', self.from_times_to_timeseries(1,2,3,4))
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.extractor.extract.assert_called_with(query=self.num_tea_boils_query)
