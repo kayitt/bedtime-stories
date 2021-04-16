@@ -74,7 +74,6 @@ class TeaBoilsTransformer:
 
     def transform(self, builder: Builder) -> None:
         tz = ZoneInfo("Europe/Berlin")
-        ts_0 = datetime(2021, 1, 1, tzinfo=tz)
         series = self.extractor.extract(query=self.query)
         ts_index = pd.to_datetime([0], unit="ms").tz_localize(tz="UTC")
         series = pd.concat([pd.Series([0], index=ts_index), series])
