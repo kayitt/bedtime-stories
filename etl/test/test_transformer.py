@@ -22,7 +22,19 @@ def _series_to_ts(series: pd.Series):
     return min_ts
 
 
-def to_milliseconds(ts: datetime) -> int:
+def from_times_to_timeseries(val1, val2, val3, val4):
+    tz = ZoneInfo("Europe/Berlin")
+    index = [
+        _to_milliseconds(datetime(2021, 4, 11, hour=5, tzinfo=tz)),
+        _to_milliseconds(datetime(2021, 4, 11, hour=10, tzinfo=tz)),
+        _to_milliseconds(datetime(2021, 4, 11, hour=22, tzinfo=tz)),
+        _to_milliseconds(datetime(2021, 4, 11, hour=23, tzinfo=tz)),
+    ]
+    ts_index = pd.to_datetime([x for x in index], unit="ms").tz_localize(tz="UTC")
+    return pd.Series([val1, val2, val3, val4], index=ts_index)
+
+
+def _to_milliseconds(ts: datetime) -> int:
     return int(ts.timestamp() * 1000)
 
 
@@ -143,18 +155,6 @@ class TestOutsideTemperatureTransformer(TestCase):
         OutsideTemperatureTransformer(self.extractor).transform(builder)
 
         self.assertEqual(_outside_temperature(series), builder.outside_temperature)
-
-
-def from_times_to_timeseries(val1, val2, val3, val4):
-    tz = ZoneInfo("Europe/Berlin")
-    index = [
-        to_milliseconds(datetime(2021, 4, 11, hour=5, tzinfo=tz)),
-        to_milliseconds(datetime(2021, 4, 11, hour=10, tzinfo=tz)),
-        to_milliseconds(datetime(2021, 4, 11, hour=22, tzinfo=tz)),
-        to_milliseconds(datetime(2021, 4, 11, hour=23, tzinfo=tz)),
-    ]
-    ts_index = pd.to_datetime([x for x in index], unit="ms").tz_localize(tz="UTC")
-    return pd.Series([val1, val2, val3, val4], index=ts_index)
 
 
 class TestTeaBoilsTransformer(TestCase):
