@@ -76,9 +76,10 @@ class TeaBoilsTransformer:
         tz = ZoneInfo("Europe/Berlin")
         ts_0 = datetime(2021, 1, 1)
         series = self.extractor.extract(query=self.query)
-        series = pd.concat([pd.Series([0], index=[ts_0]), series])
         print("series")
         print(series)
+        series = pd.concat([pd.Series([0], index=[ts_0]), series])
+
         series = series.sort_index().apply(lambda x: 1 if x > 0 else 0)
         builder.num_tea_boils = sum(series.diff() > 0)
 
