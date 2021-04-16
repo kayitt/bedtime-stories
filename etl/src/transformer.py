@@ -71,7 +71,9 @@ class TeaBoilsTransformer:
 
     def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.query)
-        builder.num_tea_boils = sum(series > 0)
+        series._set_value(pd.Timestamp(0), 0)
+        series = series.sort_index().apply(lambda x: 1 if x > 0 else 0)
+        builder.num_tea_boils = sum(series.diff() > 0)
 
 
 class WakeUpTimeTransformer:

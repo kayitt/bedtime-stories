@@ -165,23 +165,25 @@ class TestTeaBoilsTransformer(TestCase):
 
         self.assertIsNone(builder.num_tea_boils)
 
-    def test_num_tea_boils_counts_positive_values(self):
-        index = pd.to_datetime([10, 15, 20], unit="ms")
-        self.extractor.extract.return_value = pd.Series([0, 10, 40], index=index)
+    def test_num_tea_boils_counts_non_consequent_positive_values(self):
+        index = pd.to_datetime([1, 2, 3, 4], unit="ms")
+        self.extractor.extract.return_value = pd.Series([0, 23, 21, 0], index=index)
+
+        builder = Builder()
+        TeaBoilsTransformer(self.extractor).transform(builder)
+
+        self.assertEqual(1, builder.num_tea_boils)
+
+    def test_num_tea_boils_works_if_first_value_positive(self):
+        index = pd.to_datetime([1, 2, 3, 4], unit="ms")
+        self.extractor.extract.return_value = pd.Series([1, 0, 1, 0], index=index)
 
         builder = Builder()
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.assertEqual(2, builder.num_tea_boils)
 
-    def test_num_tea_boils_counts_positive_values_another(self):
-        index = pd.to_datetime([4, 9], unit="ms")
-        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
 
-        builder = Builder()
-        TeaBoilsTransformer(self.extractor).transform(builder)
-
-        self.assertEqual(2, builder.num_tea_boils)
 
 
 class TestWakeUpTime(TestCase):
