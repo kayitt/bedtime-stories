@@ -73,7 +73,6 @@ class TeaBoilsTransformer:
         self.query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
 
     def transform(self, builder: Builder) -> None:
-        tz = ZoneInfo("Europe/Berlin")
         series = self.extractor.extract(query=self.query)
         ts_index = pd.to_datetime([0], unit="ms").tz_localize(tz="UTC")
         series = pd.concat([pd.Series([0], index=ts_index), series])
