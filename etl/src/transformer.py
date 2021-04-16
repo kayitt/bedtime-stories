@@ -75,9 +75,11 @@ class TeaBoilsTransformer:
     def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.query)
         ts_index = pd.to_datetime([0], unit="ms").tz_localize(tz="UTC")
-        series = pd.concat([pd.Series([0], index=ts_index), series])
-        series = series.sort_index()
-        series = series.apply(lambda x: 1 if x > 0 else 0)
+        series = (
+            pd.concat([pd.Series([0], index=ts_index), series])
+            .sort_index()
+            .apply(lambda x: 1 if x > 0 else 0)
+        )
         builder.num_tea_boils = sum(series.diff() > 0)
 
 
