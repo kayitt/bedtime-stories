@@ -74,13 +74,17 @@ class TeaBoilsTransformer:
 
     def transform(self, builder: Builder) -> None:
         tz = ZoneInfo("Europe/Berlin")
-        ts_0 = datetime(2021, 1, 1)
+        ts_0 = datetime(2021, 1, 1, tzinfo=tz)
         series = self.extractor.extract(query=self.query)
         print("PROBLEM SERIESS!!!!!!!!!!!!!!!!!!")
         print(series)
-        series = pd.concat([pd.Series([0], index=[ts_0]), series])
-
-        series = series.sort_index().apply(lambda x: 1 if x > 0 else 0)
+        ts_index = pd.to_datetime([0], unit="ms").tz_localize(tz="UTC")
+        print("UNTRSUNG PAWEL", pd.Series([0], index=ts_index))
+        series = pd.concat([pd.Series([0], index=ts_index), series])
+        print("INDEXES")
+        print(series.index[0:4])
+        series = series.sort_index()
+        series = series.apply(lambda x: 1 if x > 0 else 0)
         builder.num_tea_boils = sum(series.diff() > 0)
 
 

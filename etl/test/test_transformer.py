@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock
 from zoneinfo import ZoneInfo
@@ -161,10 +162,20 @@ class TestTeaBoilsTransformer(TestCase):
         self.ts_3 = ts_3 #to_milliseconds(ts_3)
         self.ts_4 = ts_4 # to_milliseconds(ts_4)
 
+    def from_times_to_timeseries(self, val1, val2, val3, val4):
+        tz = ZoneInfo("Europe/Berlin")
+        index = [to_milliseconds(datetime(2021, 4, 11, hour=5, tzinfo=tz)),
+                 to_milliseconds(datetime(2021, 4, 11, hour=10, tzinfo=tz)),
+                 to_milliseconds(datetime(2021, 4, 11, hour=22, tzinfo=tz)),
+                 to_milliseconds(datetime(2021, 4, 11, hour=23, tzinfo=tz))]
+        ts_index = pd.to_datetime([x for x in index], unit="ms").tz_localize(tz="UTC")
+        return pd.Series([val1, val2, val3, val4], index=ts_index)
+
     def test_transformed_builder_has_num_tea_boils(self):
         builder = Builder()
-        index = [self.ts_1, self.ts_2]
-        self.extractor.extract.return_value = pd.Series([0, 23], index=index)
+        self.extractor.extract.return_value = self.from_times_to_timeseries(1,2,3,4)
+        print("TEST PROBLEM SERIESS!!!!!!!!!!!!!!!!!!")
+        print(self.from_times_to_timeseries(1,2,3,4))
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.assertIsNotNone(builder.num_tea_boils)
@@ -175,7 +186,9 @@ class TestTeaBoilsTransformer(TestCase):
     def test_extract_called_with_tea_boils_query(self):
         builder = Builder()
         index = [self.ts_1, self.ts_2]
-        self.extractor.extract.return_value = pd.Series([0, 23], index=index)
+        self.extractor.extract.return_value = self.from_times_to_timeseries(1,2,3,4)
+        print("PASSING", pd.Series([0, 23], index=index))
+        print('BORKENNN', self.from_times_to_timeseries(1,2,3,4))
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.extractor.extract.assert_called_with(query=self.num_tea_boils_query)
@@ -187,7 +200,7 @@ class TestTeaBoilsTransformer(TestCase):
 
     def test_num_tea_boils_counts_non_consequent_positive_values(self):
         index = [self.ts_1, self.ts_2, self.ts_3, self.ts_4]
-        self.extractor.extract.return_value = pd.Series([0, 23, 21, 0], index=index)
+        self.extractor.extract.return_value = self.from_times_to_timeseries(0,23,21,0)
 
         builder = Builder()
         TeaBoilsTransformer(self.extractor).transform(builder)
@@ -196,7 +209,7 @@ class TestTeaBoilsTransformer(TestCase):
 
     def test_num_tea_boils_works_if_first_value_positive(self):
         index = [self.ts_1, self.ts_2, self.ts_3, self.ts_4]
-        self.extractor.extract.return_value = pd.Series([1, 0, 1, 0], index=index)
+        self.extractor.extract.return_value = self.from_times_to_timeseries(1,0,1,0)
 
         builder = Builder()
         TeaBoilsTransformer(self.extractor).transform(builder)
