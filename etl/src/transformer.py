@@ -73,11 +73,17 @@ class TeaBoilsTransformer:
         self.query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
 
     def transform(self, builder: Builder) -> None:
+        tz = ZoneInfo("Europe/Berlin")
+        ts_0 = datetime(2021, 1, 1, tzinfo=tz)
         series = self.extractor.extract(query=self.query)
-        series = pd.concat([pd.Series([0], index=[0]), series])
+        series = pd.concat([pd.Series([0], index=[ts_0]), series])
         print("series format")
         print(series)
-        series = series.sort_index().apply(lambda x: 1 if x > 0 else 0)
+        series = series.sort_index()
+        print("series sorted")
+
+        print(series)
+            #.apply(lambda x: 1 if x > 0 else 0)
         builder.num_tea_boils = sum(series.diff() > 0)
 
 

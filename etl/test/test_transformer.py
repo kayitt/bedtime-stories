@@ -155,10 +155,10 @@ class TestTeaBoilsTransformer(TestCase):
         ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
         ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
         ts_4 = datetime(2021, 4, 11, hour=23, tzinfo=tz)
-        self.ts_1 = to_milliseconds(ts_1)
-        self.ts_2 = to_milliseconds(ts_2)
-        self.ts_3 = to_milliseconds(ts_3)
-        self.ts_4 = to_milliseconds(ts_4)
+        self.ts_1 = ts_1 #to_milliseconds(ts_1)
+        self.ts_2 = ts_2 #to_milliseconds(ts_2)
+        self.ts_3 = ts_3 #to_milliseconds(ts_3)
+        self.ts_4 = ts_4 # to_milliseconds(ts_4)
 
     @skip
     def test_transformed_builder_has_num_tea_boils(self):
