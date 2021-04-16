@@ -1,5 +1,8 @@
-from unittest import TestCase, skip
+from datetime import datetime
+from unittest import TestCase
 from unittest.mock import Mock, MagicMock
+from zoneinfo import ZoneInfo
+
 import pandas as pd
 from etl.src.transformer import (
     Builder,
@@ -14,9 +17,25 @@ from etl.src.transformer import (
 from etl.src.data_classes import Model
 
 
-def _series_to_ts(series: pd.Series):
+def _to_timestamp(series: pd.Series):
     min_ts = series.index.min()
     return min_ts
+
+
+def _to_time_series(val1, val2, val3, val4):
+    tz = ZoneInfo("Europe/Berlin")
+    index = [
+        _to_milliseconds(datetime(2021, 4, 11, hour=5, tzinfo=tz)),
+        _to_milliseconds(datetime(2021, 4, 11, hour=10, tzinfo=tz)),
+        _to_milliseconds(datetime(2021, 4, 11, hour=22, tzinfo=tz)),
+        _to_milliseconds(datetime(2021, 4, 11, hour=23, tzinfo=tz)),
+    ]
+    ts_index = pd.to_datetime([x for x in index], unit="ms").tz_localize(tz="UTC")
+    return pd.Series([val1, val2, val3, val4], index=ts_index)
+
+
+def _to_milliseconds(ts: datetime) -> int:
+    return int(ts.timestamp() * 1000)
 
 
 def _outside_temperature(s):
@@ -142,10 +161,19 @@ class TestTeaBoilsTransformer(TestCase):
     def setUp(self):
         self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
         self.extractor = Mock()
+        tz = ZoneInfo("Europe/Berlin")
+        ts_1 = datetime(2021, 4, 11, hour=5, tzinfo=tz)
+        ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
+        ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
+        ts_4 = datetime(2021, 4, 11, hour=23, tzinfo=tz)
+        self.ts_1 = ts_1
+        self.ts_2 = ts_2
+        self.ts_3 = ts_3
+        self.ts_4 = ts_4
 
-    @skip
     def test_transformed_builder_has_num_tea_boils(self):
         builder = Builder()
+        self.extractor.extract.return_value = _to_time_series(1, 2, 3, 4)
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.assertIsNotNone(builder.num_tea_boils)
@@ -153,9 +181,10 @@ class TestTeaBoilsTransformer(TestCase):
     def test_accepts_extractor(self):
         TeaBoilsTransformer(self.extractor)
 
-    @skip
     def test_extract_called_with_tea_boils_query(self):
         builder = Builder()
+        index = [self.ts_1, self.ts_2]
+        self.extractor.extract.return_value = _to_time_series(1, 2, 3, 4)
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.extractor.extract.assert_called_with(query=self.num_tea_boils_query)
@@ -165,18 +194,16 @@ class TestTeaBoilsTransformer(TestCase):
 
         self.assertIsNone(builder.num_tea_boils)
 
-    def test_num_tea_boils_counts_positive_values(self):
-        index = pd.to_datetime([10, 15, 20], unit="ms")
-        self.extractor.extract.return_value = pd.Series([0, 10, 40], index=index)
+    def test_num_tea_boils_counts_non_consequent_positive_values(self):
+        self.extractor.extract.return_value = _to_time_series(0, 23, 21, 0)
 
         builder = Builder()
         TeaBoilsTransformer(self.extractor).transform(builder)
 
-        self.assertEqual(2, builder.num_tea_boils)
+        self.assertEqual(1, builder.num_tea_boils)
 
-    def test_num_tea_boils_counts_positive_values_another(self):
-        index = pd.to_datetime([4, 9], unit="ms")
-        self.extractor.extract.return_value = pd.Series([23, 21], index=index)
+    def test_num_tea_boils_works_if_first_value_positive(self):
+        self.extractor.extract.return_value = _to_time_series(1, 0, 1, 0)
 
         builder = Builder()
         TeaBoilsTransformer(self.extractor).transform(builder)
@@ -214,7 +241,7 @@ class TestWakeUpTime(TestCase):
         series = pd.Series([34, 21], index=index)
         self.extractor.extract.return_value = series
         builder = Builder()
-        expected_ts = _series_to_ts(series)
+        expected_ts = _to_timestamp(series)
 
         WakeUpTimeTransformer(self.extractor).transform(builder)
 
@@ -225,7 +252,7 @@ class TestWakeUpTime(TestCase):
         series = pd.Series([23, 21], index=index)
         self.extractor.extract.return_value = series
         builder = Builder()
-        expected_ts = _series_to_ts(pd.Series([23, 21], index=index))
+        expected_ts = _to_timestamp(pd.Series([23, 21], index=index))
 
         WakeUpTimeTransformer(self.extractor).transform(builder)
 
