@@ -160,9 +160,10 @@ class TestTeaBoilsTransformer(TestCase):
         self.ts_3 = ts_3 #to_milliseconds(ts_3)
         self.ts_4 = ts_4 # to_milliseconds(ts_4)
 
-    @skip
     def test_transformed_builder_has_num_tea_boils(self):
         builder = Builder()
+        index = [self.ts_1, self.ts_2]
+        self.extractor.extract.return_value = pd.Series([0, 23], index=index)
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.assertIsNotNone(builder.num_tea_boils)
@@ -170,9 +171,10 @@ class TestTeaBoilsTransformer(TestCase):
     def test_accepts_extractor(self):
         TeaBoilsTransformer(self.extractor)
 
-    @skip
     def test_extract_called_with_tea_boils_query(self):
         builder = Builder()
+        index = [self.ts_1, self.ts_2]
+        self.extractor.extract.return_value = pd.Series([0, 23], index=index)
         TeaBoilsTransformer(self.extractor).transform(builder)
 
         self.extractor.extract.assert_called_with(query=self.num_tea_boils_query)
