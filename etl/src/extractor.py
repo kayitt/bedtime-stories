@@ -43,12 +43,11 @@ class TimeSeriesExtractor:
         ts_threshold = self._to_milliseconds(self._last_6am(self.clock.now()))
         data_today = [x for x in data if x[0] > ts_threshold]
 
-        return pd.Series(
-            [x[1] for x in data_today],
-            index=pd.to_datetime([x[0] for x in data_today], unit="ms").tz_localize(
-                tz="UTC"
-            ),
-        )
+        series = pd.Series([x[1] for x in data_today],
+                           index=pd.to_datetime([x[0] for x in data_today], unit="ms").tz_localize(tz="UTC"), )
+
+        print(series)
+        return series
 
     def _last_6am(self, ts: datetime) -> datetime:
         if ts.hour >= self.day_start_hour:
