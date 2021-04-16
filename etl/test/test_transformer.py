@@ -1,5 +1,8 @@
+from datetime import datetime
 from unittest import TestCase, skip
 from unittest.mock import Mock, MagicMock
+from zoneinfo import ZoneInfo
+
 import pandas as pd
 from etl.src.transformer import (
     Builder,
@@ -17,6 +20,10 @@ from etl.src.data_classes import Model
 def _series_to_ts(series: pd.Series):
     min_ts = series.index.min()
     return min_ts
+
+
+def to_milliseconds(ts: datetime) -> int:
+    return int(ts.timestamp() * 1000)
 
 
 def _outside_temperature(s):
@@ -138,10 +145,20 @@ class TestOutsideTemperatureTransformer(TestCase):
         self.assertEqual(_outside_temperature(series), builder.outside_temperature)
 
 
+# noinspection DuplicatedCode
 class TestTeaBoilsTransformer(TestCase):
     def setUp(self):
         self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
         self.extractor = Mock()
+        tz = ZoneInfo("Europe/Berlin")
+        ts_1 = datetime(2021, 4, 11, hour=5, tzinfo=tz)
+        ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
+        ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
+        ts_4 = datetime(2021, 4, 11, hour=23, tzinfo=tz)
+        self.ts_1 = to_milliseconds(ts_1)
+        self.ts_2 = to_milliseconds(ts_2)
+        self.ts_3 = to_milliseconds(ts_3)
+        self.ts_4 = to_milliseconds(ts_4)
 
     @skip
     def test_transformed_builder_has_num_tea_boils(self):
@@ -166,7 +183,7 @@ class TestTeaBoilsTransformer(TestCase):
         self.assertIsNone(builder.num_tea_boils)
 
     def test_num_tea_boils_counts_non_consequent_positive_values(self):
-        index = pd.to_datetime([1, 2, 3, 4], unit="ms")
+        index = [self.ts_1, self.ts_2, self.ts_3, self.ts_4]
         self.extractor.extract.return_value = pd.Series([0, 23, 21, 0], index=index)
 
         builder = Builder()
@@ -175,7 +192,7 @@ class TestTeaBoilsTransformer(TestCase):
         self.assertEqual(1, builder.num_tea_boils)
 
     def test_num_tea_boils_works_if_first_value_positive(self):
-        index = pd.to_datetime([1, 2, 3, 4], unit="ms")
+        index = [self.ts_1, self.ts_2, self.ts_3, self.ts_4]
         self.extractor.extract.return_value = pd.Series([1, 0, 1, 0], index=index)
 
         builder = Builder()
