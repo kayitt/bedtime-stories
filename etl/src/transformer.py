@@ -76,7 +76,7 @@ class TeaBoilsTransformer:
         tz = ZoneInfo("Europe/Berlin")
         ts_0 = datetime(2021, 1, 1)
         series = self.extractor.extract(query=self.query)
-        print("series")
+        print("PROBLEM SERIESS!!!!!!!!!!!!!!!!!!")
         print(series)
         series = pd.concat([pd.Series([0], index=[ts_0]), series])
 
