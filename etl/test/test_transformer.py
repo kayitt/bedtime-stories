@@ -17,7 +17,7 @@ from etl.src.transformer import (
 from etl.src.data_classes import Model
 
 
-def _series_to_ts(series: pd.Series):
+def _to_timestamp(series: pd.Series):
     min_ts = series.index.min()
     return min_ts
 
@@ -241,7 +241,7 @@ class TestWakeUpTime(TestCase):
         series = pd.Series([34, 21], index=index)
         self.extractor.extract.return_value = series
         builder = Builder()
-        expected_ts = _series_to_ts(series)
+        expected_ts = _to_timestamp(series)
 
         WakeUpTimeTransformer(self.extractor).transform(builder)
 
@@ -252,7 +252,7 @@ class TestWakeUpTime(TestCase):
         series = pd.Series([23, 21], index=index)
         self.extractor.extract.return_value = series
         builder = Builder()
-        expected_ts = _series_to_ts(pd.Series([23, 21], index=index))
+        expected_ts = _to_timestamp(pd.Series([23, 21], index=index))
 
         WakeUpTimeTransformer(self.extractor).transform(builder)
 
