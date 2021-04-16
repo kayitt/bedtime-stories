@@ -152,6 +152,7 @@ class TestTeaBoilsTransformer(TestCase):
         self.extractor = Mock()
         tz = ZoneInfo("Europe/Berlin")
         ts_1 = datetime(2021, 4, 11, hour=5, tzinfo=tz)
+        print("timestamp 1", ts_1)
         ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
         ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
         ts_4 = datetime(2021, 4, 11, hour=23, tzinfo=tz)
