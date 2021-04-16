@@ -74,7 +74,7 @@ class TeaBoilsTransformer:
 
     def transform(self, builder: Builder) -> None:
         tz = ZoneInfo("Europe/Berlin")
-        ts_0 = datetime(2021, 1, 1, tzinfo=tz)
+        ts_0 = datetime(2021, 1, 1)
         series = self.extractor.extract(query=self.query)
         series = pd.concat([pd.Series([0], index=[ts_0]), series])
         print("series format")
