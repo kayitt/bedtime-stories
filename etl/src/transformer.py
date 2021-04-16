@@ -75,9 +75,7 @@ class TeaBoilsTransformer:
     def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.query)
         tz = ZoneInfo("Europe/Berlin")
-        dummy_ts = datetime(1970, 1, 1, tzinfo=tz)
         series = pd.concat([pd.Series([0], index=[0]), series])
-        print(series)
         series = series.sort_index().apply(lambda x: 1 if x > 0 else 0)
         builder.num_tea_boils = sum(series.diff() > 0)
 
