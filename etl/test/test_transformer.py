@@ -146,7 +146,6 @@ class TestOutsideTemperatureTransformer(TestCase):
         self.assertEqual(_outside_temperature(series), builder.outside_temperature)
 
 
-# noinspection DuplicatedCode
 class TestTeaBoilsTransformer(TestCase):
     def setUp(self):
         self.num_tea_boils_query = """SELECT MAX("value") FROM "W" WHERE ("entity_id" = 'plug_current_consumption_3') AND time >= now() - 24h GROUP BY time(5m) fill(0)"""
@@ -156,10 +155,10 @@ class TestTeaBoilsTransformer(TestCase):
         ts_2 = datetime(2021, 4, 11, hour=10, tzinfo=tz)
         ts_3 = datetime(2021, 4, 11, hour=22, tzinfo=tz)
         ts_4 = datetime(2021, 4, 11, hour=23, tzinfo=tz)
-        self.ts_1 = ts_1  # to_milliseconds(ts_1)
-        self.ts_2 = ts_2  # to_milliseconds(ts_2)
-        self.ts_3 = ts_3  # to_milliseconds(ts_3)
-        self.ts_4 = ts_4  # to_milliseconds(ts_4)
+        self.ts_1 = ts_1
+        self.ts_2 = ts_2
+        self.ts_3 = ts_3
+        self.ts_4 = ts_4
 
     def from_times_to_timeseries(self, val1, val2, val3, val4):
         tz = ZoneInfo("Europe/Berlin")
