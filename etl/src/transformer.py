@@ -78,11 +78,7 @@ class TeaBoilsTransformer:
         series = self.extractor.extract(query=self.query)
         series = pd.concat([pd.Series([0], index=[ts_0]), series])
         print("series format")
-        series = series.sort_index()
-        print("series sorted")
-
-        print(series)
-            #.apply(lambda x: 1 if x > 0 else 0)
+        series = series.sort_index().apply(lambda x: 1 if x > 0 else 0)
         builder.num_tea_boils = sum(series.diff() > 0)
 
 
