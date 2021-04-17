@@ -4,8 +4,6 @@ handler:
     - promptResponse:
         firstSimple:
           variants:
-          - speech: Sorry, I still didn't catch that. The app will now quit. Please
-              try the app again.
-            text: Sorry, I still didn't catch that. The app will now quit. Please
-              try the app again.
+          - speech: Sorry, I still didn't catch that. The app will now quit. Please try the app again.
+            text: Sorry, I still didn't catch that. The app will now quit. Please try the app again.
 transitionToScene: actions.scene.END_CONVERSATION

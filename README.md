@@ -4,6 +4,7 @@
 
 ## Building
 
+
 ### Firebase Functions
 
 TBD
@@ -11,3 +12,8 @@ TBD
 ### ETL
 
 TBD
+
+
+### Synchronising Actions
+
+Please install [gactions](https://github.com/actions-on-google/gactions) and run `gactions pull` to pull the newest actions.

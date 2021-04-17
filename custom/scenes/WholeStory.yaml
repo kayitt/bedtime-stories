@@ -3,6 +3,7 @@ intentEvents:
   transitionToScene: Choose
 - intent: actions.intent.NO
   transitionToScene: actions.scene.END_CONVERSATION
+- intent: actions.intent.
 onEnter:
   staticPrompt:
     candidates:

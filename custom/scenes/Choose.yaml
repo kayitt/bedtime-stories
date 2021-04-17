@@ -13,8 +13,7 @@ onEnter:
     - promptResponse:
         firstSimple:
           variants:
-          - speech: Which bedtime story would you like to hear? You can choose tea
-              consumption or wake up time.
+          - speech: Which bedtime story would you like to hear? You can choose tea consumption or wake up time.
         suggestions:
         - title: Tea consumption
         - title: Wake up time
