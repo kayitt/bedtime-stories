@@ -4,6 +4,7 @@ import {conversation} from "@assistant/conversation";
 import {TeaConsumer} from "./tea_consumer";
 import {TimeUtils} from "./time_utils";
 import {DayStatsFetcher, FetcherImpl, DayStats} from "./day_stats_fetcher";
+import {WholeStoryFactory} from "./whole_story";
 
 const teaConsumer = new TeaConsumer();
 const timeUtils = new TimeUtils();
@@ -21,19 +22,6 @@ const currentData = async (): Promise<DayStats> => {
 
   return dayFetcher.fetch(today);
 };
-
-class WholeStory {
-  say(stats: DayStats): string {
-    const maxTemp = stats.maxTemperatureOutside;
-    const minTemp = stats.minTemperatureOutside;
-
-    return `Today you have woken up at a ${timeUtils.formatLocalTime(stats.wakeUpTime)}. 
-    Since then you have made ${stats.teaBoils} cups of tea.
-    Current temperature at home is ${stats.temperatureInside.value} degrees celsius.
-    The coldest it has been outside was ${minTemp.value} degrees at ${timeUtils.formatLocalTime(minTemp.date)} 
-    and the warmest ${maxTemp.value} degrees at ${timeUtils.formatLocalTime(maxTemp.date)}.`;
-  }
-}
 
 app.handle("tea_consumption", async (conv) => {
   console.log("Start scene: Tea consumption");
@@ -60,8 +48,9 @@ app.handle("wake_up_time", async (conv) => {
 
 app.handle("whole_story", async (conv) => {
   const now = new Date();
+  const wholeStory = new WholeStoryFactory().create(conv.user.locale);
   try {
-    const speach = new WholeStory().say(await dayFetcher.fetch(now));
+    const speach = wholeStory.say(await dayFetcher.fetch(now));
 
     conv.append(speach);
   } catch (error) {
@@ -70,8 +59,10 @@ app.handle("whole_story", async (conv) => {
 
     conv.append(`Unable to return the whole story for ${now.toUTCString()} UTC. `);
     conv.append("Lets have it for a demo date. ");
-    conv.append(new WholeStory().say(await dayFetcher.fetch(demoDate)));
+    conv.append(wholeStory.say(await dayFetcher.fetch(demoDate)));
   }
 });
 
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app);
+
+
