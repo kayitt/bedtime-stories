@@ -143,8 +143,7 @@ describe("spanish from latin america whole story", function () {
 
     expect(speach).to.equal(`Hoy te has levantado a las 8:45 AM. ¿Por qué dormiste tan poco? 
     Desde entonces has hecho 2 tazas de Yerba mate. 
-    La temperatura actual en casa es de 20 grados centígrados. Sería mejor
-    si estuviera al menos 5 grados más caliente.
+    La temperatura actual en casa es de 20 grados centígrados. 
     Lo más frío que ha estado afuera fue de 11 grados a las 7:45 AM 
     y el más cálido de 11 grados a las 6:00 PM. ¡Qué frío!`
       .replace(/\s+/g, ' '));

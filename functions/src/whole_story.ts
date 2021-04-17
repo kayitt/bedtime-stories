@@ -57,7 +57,6 @@ class WholeStorySpanishLatin extends WholeStory {
         Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}. ¿Por qué dormiste tan poco?
         ${tea} 
         La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados.
-        Sería mejor si estuviera al menos 5 grados más caliente.
         Lo más frío que ha estado afuera fue de ${minTemp.value} grados
         a las ${timeUtils.formatLocalTime(minTemp.date)} 
         y el más cálido de ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. ¡Qué frío!`;
