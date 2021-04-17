@@ -6,4 +6,4 @@ node_modules/
 drafts
 **/__pycache__/
 etl/assets
-
+webhooks/

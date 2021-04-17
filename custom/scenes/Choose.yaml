@@ -8,15 +8,4 @@ intentEvents:
 - intent: WholeStory
   transitionToScene: WholeStory
 onEnter:
-  staticPrompt:
-    candidates:
-    - promptResponse:
-        firstSimple:
-          variants:
-          - speech: Which bedtime story would you like to hear? You can choose tea
-              consumption or wake up time.
-        suggestions:
-        - title: Tea consumption
-        - title: Wake up time
-        - title: Whole story
-        - title: "No"
+  staticPromptName: static_prompt_1

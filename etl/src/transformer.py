@@ -1,4 +1,7 @@
+from datetime import datetime
 from typing import List
+from zoneinfo import ZoneInfo
+
 import pandas as pd
 from etl.src.extractor import TimeSeriesExtractor
 from etl.src.data_classes import Model
@@ -71,7 +74,13 @@ class TeaBoilsTransformer:
 
     def transform(self, builder: Builder) -> None:
         series = self.extractor.extract(query=self.query)
-        builder.num_tea_boils = sum(series > 0)
+        ts_index = pd.to_datetime([0], unit="ms").tz_localize(tz="UTC")
+        series = (
+            pd.concat([pd.Series([0], index=ts_index), series])
+            .sort_index()
+            .apply(lambda x: 1 if x > 0 else 0)
+        )
+        builder.num_tea_boils = sum(series.diff() > 0)
 
 
 class WakeUpTimeTransformer:
