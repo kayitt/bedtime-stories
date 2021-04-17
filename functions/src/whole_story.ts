@@ -39,7 +39,7 @@ class WholeStorySpanish extends WholeStory {
         La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados. 
         Lo más frío que ha estado afuera fue de ${minTemp.value}
         grados a las ${timeUtils.formatLocalTime(minTemp.date)} 
-        y el más cálido de ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. `;
+        y lo más cálido fue ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. `;
   }
 }
 
@@ -48,8 +48,8 @@ class WholeStorySpanishLatin extends WholeStory {
     const maxTemp = stats.maxTemperatureOutside;
     const minTemp = stats.minTemperatureOutside;
 
-    const cupsOfTea = `Desde entonces has hecho ${stats.teaBoils} tazas de Yerba mate. `;
-    const cupOfTea = `Desde entonces has hecho ${stats.teaBoils} taza de Yerba mate. `;
+    const cupsOfTea = `Desde entonces has hecho ${stats.teaBoils} termos para el mate. `;
+    const cupOfTea = `Desde entonces has hecho ${stats.teaBoils} termo para el mate. `;
 
     const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
 
@@ -59,7 +59,7 @@ class WholeStorySpanishLatin extends WholeStory {
         La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados.
         Lo más frío que ha estado afuera fue de ${minTemp.value} grados
         a las ${timeUtils.formatLocalTime(minTemp.date)} 
-        y el más cálido de ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. ¡Qué frío!`;
+        y lo más cálido fue ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. ¡Qué frío!`;
   }
 }
 
