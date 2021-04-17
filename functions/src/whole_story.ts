@@ -48,8 +48,8 @@ class WholeStorySpanishLatin extends WholeStory {
     const maxTemp = stats.maxTemperatureOutside;
     const minTemp = stats.minTemperatureOutside;
 
-    const cupsOfTea = `Desde entonces has hecho ${stats.teaBoils} termos para el mate. `;
-    const cupOfTea = `Desde entonces has hecho ${stats.teaBoils} termo para el mate. `;
+    const cupsOfTea = `Desde entonces has hervido ${stats.teaBoils} termos para el mate. `;
+    const cupOfTea = `Desde entonces has hervido ${stats.teaBoils} termo para el mate. `;
 
     const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
 
