@@ -33,8 +33,13 @@ class WholeStorySpanish extends WholeStory {
 
     const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
 
+
+    const wakeUp = stats.wakeUpTime == undefined ?
+    "Creo que sigues en la cama - levantate." :
+    `Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}.`;
+
     return `
-        Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}. 
+        ${wakeUp}
         ${tea} 
         La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados. 
         Lo más frío que ha estado afuera fue de ${minTemp.value}
@@ -53,8 +58,12 @@ class WholeStorySpanishLatin extends WholeStory {
 
     const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
 
+    const wakeUp = stats.wakeUpTime == undefined ?
+    "Creo que sigues en la cama - levantate." :
+    `Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}. ¿Por qué dormiste tan poco?`;
+
     return `
-        Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}. ¿Por qué dormiste tan poco?
+        ${wakeUp} 
         ${tea} 
         La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados.
         Lo más frío que ha estado afuera fue de ${minTemp.value} grados
@@ -73,8 +82,12 @@ class WholeStoryEnglish extends WholeStory {
 
     const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
 
+    const wakeUp = stats.wakeUpTime == undefined ?
+    "We haven't seen you around the house today." :
+    `Today you have woken up at a ${timeUtils.formatLocalTime(stats.wakeUpTime)}.`;
+
     return `
-        Today you have woken up at a ${timeUtils.formatLocalTime(stats.wakeUpTime)}. 
+        ${wakeUp} 
         ${tea}
         Current temperature at home is ${stats.temperatureInside.value} degrees celsius. 
         The coldest it has been outside was ${minTemp.value} degrees at ${timeUtils.formatLocalTime(minTemp.date)}

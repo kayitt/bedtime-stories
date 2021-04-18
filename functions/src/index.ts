@@ -39,7 +39,9 @@ app.handle("tea_consumption", async (conv) => {
 app.handle("wake_up_time", async (conv) => {
   try {
     const wakeUpTime = (await currentData()).wakeUpTime;
-    conv.add(`Today you have woken up at a ${timeUtils.formatLocalTime(wakeUpTime)}.`);
+    conv.add(wakeUpTime != undefined ?
+      `Today you have woken up at a ${timeUtils.formatLocalTime(wakeUpTime)}.` :
+      "We haven't seen you around the house today.");
   } catch (error) {
     console.error(`Unable to return wake up time. ${error}`);
     conv.append("Unable to return wake up time.");
