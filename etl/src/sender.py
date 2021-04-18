@@ -23,7 +23,7 @@ class Sender:
             "num_tea_boils": model.num_tea_boils,
             "temperature_outside": model.outside_temperature,
         }
-        if type(model.wake_up_time) != NaTType:
+        if not isinstance(model.wake_up_time, NaTType):
             data.update({"wake_up_time": model.wake_up_time})
 
         self.firestore_sender.send(data)
