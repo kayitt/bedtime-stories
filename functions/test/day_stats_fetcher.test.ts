@@ -50,7 +50,24 @@ describe("day stats fetcher", function () {
 
     var result = fetcher.fetch(new Date("2021-03-08T07:45:00Z"));
 
+    
     return expect(result).to.be.rejected;
+
+  });
+
+  it("wake up time can be undefined", async function () {
+    let stats: FirestoreDayStats =
+    {
+      wake_up_time: undefined,
+      num_tea_boils: 0,
+      temperature_inside: { current: 1 },
+      temperature_outside: { min: { ts: admin.firestore.Timestamp.fromDate(new Date("2021-03-08T07:45:00Z")), value: 20.1 }, max: { ts: admin.firestore.Timestamp.fromDate(new Date("2021-03-08T07:45:00Z")), value: 21.1 } }
+    };
+    const fetcher = new DayStatsFetcher(new FakeFetcher(stats));
+
+    var result = await fetcher.fetch(new Date("2021-03-08T07:45:00Z"));
+
+    return expect(result.wakeUpTime).is.undefined;
   });
 
 });

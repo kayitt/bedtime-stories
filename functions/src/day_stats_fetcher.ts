@@ -13,15 +13,14 @@ export class DayStatsFetcher {
     const stats = await this.fetcher.fetch(this.pathProvider.basePath(date));
 
     if (stats.num_tea_boils == undefined ||
-      stats.wake_up_time == undefined ||
       stats.temperature_inside == undefined ||
       stats.temperature_outside == undefined) {
-      throw Error(`Returned values for ${date.toLocaleDateString} are undefined`);
+      throw Error(`Returned values for ${date.toLocaleDateString()} are undefined`);
     }
 
     return {
       teaBoils: stats.num_tea_boils,
-      wakeUpTime: stats.wake_up_time.toDate(),
+      wakeUpTime: stats.wake_up_time?.toDate(),
       temperatureInside: {
         value: stats.temperature_inside.current,
         date: new Date(),
@@ -40,7 +39,7 @@ export class DayStatsFetcher {
 }
 
 export interface DayStats {
-  wakeUpTime: Date;
+  wakeUpTime: Date | undefined;
   teaBoils: number;
   temperatureInside: TemperaturePoint,
   minTemperatureOutside: TemperaturePoint,
@@ -67,9 +66,9 @@ interface FirestoreTemperatureRange {
 }
 
 export interface FirestoreDayStats {
-  temperature_outside: FirestoreTemperatureRange;
-  temperature_inside: FirestoreTemperatureScalar;
-  wake_up_time: admin.firestore.Timestamp;
+  temperature_outside: FirestoreTemperatureRange | undefined;
+  temperature_inside: FirestoreTemperatureScalar | undefined;
+  wake_up_time: admin.firestore.Timestamp | undefined;
   num_tea_boils: number | undefined;
 }
 

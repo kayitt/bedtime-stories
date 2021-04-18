@@ -56,6 +56,30 @@ describe("english whole story", function () {
 
     expect(speach).to.contains(`Since then you have made 1 cup of tea.`);
   });
+
+  it("not woken up yet", function () {
+    const dayStats = {
+      teaBoils: 1,
+      wakeUpTime: undefined,
+      temperatureInside: {
+        value: 20.0,
+        date: new Date(),
+
+      },
+      minTemperatureOutside: {
+        date: new Date("2021-03-08T06:45:00Z"),
+        value: 11.0,
+      },
+      maxTemperatureOutside: {
+        date: new Date("2021-03-08T17:00:00Z"),
+        value: 11.0,
+      },
+    };
+
+    let speach = wholeStory.say(dayStats);
+
+    expect(speach).to.contains(`We haven't seen you around the house today.`);
+  });
 });
 
 describe("spanish from spain whole story", function () {
@@ -114,6 +138,30 @@ describe("spanish from spain whole story", function () {
 
     expect(speach).to.contains(`Desde entonces has hecho 1 taza de té`);
   });
+
+  it("not woken up yet", function () {
+    const dayStats = {
+      teaBoils: 1,
+      wakeUpTime: undefined,
+      temperatureInside: {
+        value: 20.0,
+        date: new Date(),
+
+      },
+      minTemperatureOutside: {
+        date: new Date("2021-03-08T06:45:00Z"),
+        value: 11.0,
+      },
+      maxTemperatureOutside: {
+        date: new Date("2021-03-08T17:00:00Z"),
+        value: 11.0,
+      },
+    };
+
+    let speach = wholeStory.say(dayStats);
+
+    expect(speach).to.contains(`Creo que sigues en la cama - levantate.`);
+  });
 });
 
 describe("spanish from latin america whole story", function () {
@@ -171,5 +219,30 @@ describe("spanish from latin america whole story", function () {
     let speach = wholeStory.say(dayStats);
 
     expect(speach).to.contains(`Desde entonces has hervido 1 termo para el mate`);
+  });
+
+
+  it("not woken up yet", function () {
+    const dayStats = {
+      teaBoils: 1,
+      wakeUpTime: undefined,
+      temperatureInside: {
+        value: 20.0,
+        date: new Date(),
+
+      },
+      minTemperatureOutside: {
+        date: new Date("2021-03-08T06:45:00Z"),
+        value: 11.0,
+      },
+      maxTemperatureOutside: {
+        date: new Date("2021-03-08T17:00:00Z"),
+        value: 11.0,
+      },
+    };
+
+    let speach = wholeStory.say(dayStats);
+
+    expect(speach).to.contains(`Creo que sigues en la cama - levantate.`);
   });
 });
