@@ -1,6 +1,8 @@
 intentEvents:
-- handler:
-    staticPromptName: static_prompt_2
-  intent: actions.intent.
+- intent: actions.intent.NO
+  transitionToScene: actions.scene.END_CONVERSATION
+- intent: actions.intent.YES
+  transitionToScene: actions.scene.END_CONVERSATION
 onEnter:
+  staticPromptName: static_prompt_2
   webhookHandler: whole_story
