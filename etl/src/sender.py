@@ -1,8 +1,7 @@
 from datetime import datetime
 from google.cloud.firestore_v1 import Client
-from pandas import Timestamp
-
 from etl.src.data_classes import Model
+from pandas._libs.tslibs.nattype import NaTType
 
 
 class FirestoreSender:
@@ -19,14 +18,15 @@ class Sender:
         self.firestore_sender = firestore_sender
 
     def send(self, model: Model) -> None:
-        self.firestore_sender.send(
-            {
-                "temperature_inside": {"current": model.current_temperature},
-                "num_tea_boils": model.num_tea_boils,
-                "wake_up_time": model.wake_up_time,
-                "temperature_outside": model.outside_temperature,
-            }
-        )
+        data = {
+            "temperature_inside": {"current": model.current_temperature},
+            "num_tea_boils": model.num_tea_boils,
+            "temperature_outside": model.outside_temperature,
+        }
+        if type(model.wake_up_time) != NaTType:
+            data.update({"wake_up_time": model.wake_up_time})
+
+        self.firestore_sender.send(data)
 
 
 class UnableToLoadException(Exception):

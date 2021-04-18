@@ -1,5 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
+from pandas._libs.tslibs.nattype import NaT
 from etl.src.data_classes import Model
 from etl.src.sender import Sender, UnableToLoadException
 
@@ -48,6 +49,26 @@ class TestSender(TestCase):
                 "temperature_inside": {"current": 21},
                 "num_tea_boils": 4,
                 "wake_up_time": 45,
+                "temperature_outside": 0,
+            }
+        )
+
+    def test_sender_does_not_include_wake_up_time_if_undefined(self):
+        self.firestore_sender = Mock()
+
+        Sender(self.firestore_sender).send(
+            model=Model(
+                current_temperature=21,
+                num_tea_boils=4,
+                wake_up_time=NaT,
+                outside_temperature=0,
+            )
+        )
+
+        self.firestore_sender.send.assert_called_with(
+            {
+                "temperature_inside": {"current": 21},
+                "num_tea_boils": 4,
                 "temperature_outside": 0,
             }
         )
