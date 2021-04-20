@@ -5,23 +5,37 @@ on:
     branches: [ main ]
 
 jobs:
-  test-functions:
+  functions:
     name: Functions
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./functions
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '12'
+
+      - name: Install libraries
+        run: npm install
+        working-directory: ${{env.working-directory}}
+
+      - name: Install firebase
+        run: npm i firebase-tools -g
+
       - name: Test
         run: | 
-          cd functions
-          npm install
           npm test
           npm run lint
+
+      - name: Deploy
+        run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}    
+
   test-etl:
     name: ETL
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./etl
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v2
@@ -29,13 +43,11 @@ jobs:
           python-version: '3.9'
       - name: Install dependencies
         run: |
-          cd etl
           python -m pip install --upgrade pip
           pip install flake8
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
-          cd etl
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
