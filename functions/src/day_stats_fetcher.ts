@@ -40,13 +40,13 @@ export class DayStatsFetcher {
 
 export interface DayStats {
   wakeUpTime: Date | undefined;
-  teaBoils: number;
-  temperatureInside: TemperaturePoint,
-  minTemperatureOutside: TemperaturePoint,
-  maxTemperatureOutside: TemperaturePoint,
+  teaBoils: number | undefined;
+  temperatureInside: TemperaturePoint | undefined;
+  minTemperatureOutside: TemperaturePoint | undefined;
+  maxTemperatureOutside: TemperaturePoint | undefined;
 }
 
-interface TemperaturePoint {
+export interface TemperaturePoint {
   date: Date;
   value: number;
 }
