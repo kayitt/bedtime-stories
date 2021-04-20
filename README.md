@@ -1,6 +1,6 @@
 # Bedtime Stories
 
-[![Build](https://github.com/jaggernod/bedtime-stories/actions/workflows/main.yml/badge.svg)](https://github.com/jaggernod/bedtime-stories/actions/workflows/main.yml)
+[![Build](https://github.com/kayitt/bedtime-stories/actions/workflows/main.yml/badge.svg)](https://github.com/jaggernod/bedtime-stories/actions/workflows/main.yml)
 
 ## Building
 
