@@ -49,5 +49,4 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test
-        run: python -m unittest discover test
-        working-directory: ${{env.working-directory}}
+        run: python -m unittest discover etl/test

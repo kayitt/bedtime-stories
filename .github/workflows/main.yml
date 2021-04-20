@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -60,5 +60,4 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test
-        run: python -m unittest discover test
-        working-directory: ${{env.working-directory}}
+        run: python -m unittest discover etl/test
