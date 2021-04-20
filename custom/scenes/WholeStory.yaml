@@ -1,8 +1,20 @@
 intentEvents:
-- intent: actions.intent.NO
+- handler:
+    staticPromptName: static_prompt_4
+  intent: actions.intent.CANCEL
   transitionToScene: actions.scene.END_CONVERSATION
-- intent: actions.intent.YES
+- handler:
+    staticPromptName: static_prompt_4
+  intent: actions.intent.NO_MATCH_FINAL
   transitionToScene: actions.scene.END_CONVERSATION
+- handler:
+    staticPromptName: static_prompt_4
+  intent: actions.intent.NO_INPUT_FINAL
+  transitionToScene: actions.scene.END_CONVERSATION
+- handler:
+    staticPromptName: static_prompt_6
+    webhookHandler: whole_story_en
+  intent: actions.intent.NO_MATCH_1
 onEnter:
   staticPromptName: static_prompt_2
   webhookHandler: whole_story
