@@ -1,6 +1,4 @@
 intentEvents:
-- intent: actions.intent.NO
-  transitionToScene: actions.scene.END_CONVERSATION
 - intent: Tea
   transitionToScene: Tea
 - intent: WakeUp

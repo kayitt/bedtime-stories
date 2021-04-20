@@ -65,6 +65,24 @@ app.handle("whole_story", async (conv) => {
   }
 });
 
+app.handle("whole_story_en", async (conv) => {
+  const now = new Date();
+  const wholeStory = new WholeStoryFactory().create("en_US");
+  try {
+    const speach = wholeStory.say(await dayFetcher.fetch(now));
+
+    conv.append(speach);
+  } catch (error) {
+    const demoDate = new Date("2021-03-08T07:45:00Z");
+    console.error(`Unable to return the whole story. ${error}`);
+
+    conv.append(`Unable to return the whole story for ${now.toUTCString()} UTC. `);
+    conv.append("Lets have it for a demo date. ");
+    conv.append(wholeStory.say(await dayFetcher.fetch(demoDate)));
+  }
+});
+
+
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app);
 
 
