@@ -24,10 +24,10 @@ describe("english whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
     expect(speach).to.equal(`Today you have woken up at a 8:45 AM. 
-    Since then you have made 2 cups of tea. 
+    You have boiled 2 kettles for tea. 
     Current temperature at home is 20 degrees celsius. 
     The coldest it has been outside was 11 degrees at 7:45 AM 
     and the warmest 11 degrees at 6:00 PM.`.replace(/\s+/g, ' '));
@@ -52,9 +52,9 @@ describe("english whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
-    expect(speach).to.contains(`Since then you have made 1 cup of tea.`);
+    expect(speach).to.contains(`You have boiled 1 kettle for tea.`);
   });
 
   it("not woken up yet", function () {
@@ -76,10 +76,32 @@ describe("english whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
-    expect(speach).to.contains(`We haven't seen you around the house today.`);
+    expect(speach).to.not.contains(`Today you have woken up at`);
   });
+  
+  it("no outside min temperature", function () {
+    const dayStats = {
+      teaBoils: 1,
+      wakeUpTime: new Date("2021-03-08T07:45:00Z"),
+      temperatureInside: {
+        value: 20.0,
+        date: new Date(),
+
+      },
+      minTemperatureOutside: undefined,
+      maxTemperatureOutside: {
+        date: new Date("2021-03-08T17:00:00Z"),
+        value: 11.0,
+      },
+    };
+
+    let speach = wholeStory.report(dayStats);
+
+    expect(speach).to.not.contains(`The coldest it has been`);
+  });
+  
 });
 
 describe("spanish from spain whole story", function () {
@@ -105,7 +127,7 @@ describe("spanish from spain whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
     expect(speach).to.equal(`Hoy te has levantado a las 8:45 AM. 
     Desde entonces has hecho 2 tazas de té.
@@ -134,7 +156,7 @@ describe("spanish from spain whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
     expect(speach).to.contains(`Desde entonces has hecho 1 taza de té`);
   });
@@ -158,9 +180,9 @@ describe("spanish from spain whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
-    expect(speach).to.contains(`Creo que sigues en la cama - levantate.`);
+    expect(speach).to.not.contains(`Hoy te has levantado a las`);
   });
 });
 
@@ -187,7 +209,7 @@ describe("spanish from latin america whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
     expect(speach).to.equal(`Hoy te has levantado a las 8:45 AM. ¿Por qué dormiste tan poco?
     Desde entonces has hervido 2 termos para el mate.
@@ -216,7 +238,7 @@ describe("spanish from latin america whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
     expect(speach).to.contains(`Desde entonces has hervido 1 termo para el mate`);
   });
@@ -241,8 +263,8 @@ describe("spanish from latin america whole story", function () {
       },
     };
 
-    let speach = wholeStory.say(dayStats);
+    let speach = wholeStory.report(dayStats);
 
-    expect(speach).to.contains(`Creo que sigues en la cama - levantate.`);
+    expect(speach).to.not.contains(`Hoy te has levantado a las`);
   });
 });

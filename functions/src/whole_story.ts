@@ -1,4 +1,4 @@
-import {DayStats} from "./day_stats_fetcher";
+import {DayStats, TemperaturePoint} from "./day_stats_fetcher";
 import {TimeUtils} from "./time_utils";
 
 const timeUtils = new TimeUtils();
@@ -7,7 +7,7 @@ export class WholeStoryFactory {
   create(locale: string): WholeStory {
     if (locale.startsWith("es-419")) {
       return new WholeStorySpanishLatin();
-    } else if (locale.startsWith("es")) {
+    } else if (locale.startsWith("es-")) {
       return new WholeStorySpanish();
     } else {
       return new WholeStoryEnglish();
@@ -16,81 +16,100 @@ export class WholeStoryFactory {
 }
 
 export abstract class WholeStory {
-  say(stats: DayStats): string {
-    return this.doSay(stats).replace(/\s+/g, " ").trim();
+  report(stats: DayStats): string {
+    return this.doReport(stats).replace(/\s+/g, " ").trim();
   }
 
-    abstract doSay(stats: DayStats): string;
+  doReport(stats: DayStats): string {
+    const wakeUp = stats.wakeUpTime == undefined ?
+      "" :
+      this.reportWakeUpTime(stats.wakeUpTime);
+
+    const temperatureOutside = stats.minTemperatureOutside != undefined && stats.maxTemperatureOutside != undefined ?
+      this.reportTemperatureOutside(stats.minTemperatureOutside, stats.maxTemperatureOutside) :
+      "";
+
+    const temperatureInside = stats.temperatureInside != undefined ?
+      this.reportTemperatureInside(stats.temperatureInside) :
+      "";
+
+    return `
+        ${wakeUp} 
+        ${this.reportKettleBoils(stats.teaBoils ?? 0)}
+        ${temperatureInside}
+        ${temperatureOutside}`;
+  }
+
+  abstract reportTemperatureInside(tp: TemperaturePoint): string;
+
+  abstract reportTemperatureOutside(minTp: TemperaturePoint, maxTp: TemperaturePoint): string;
+
+  abstract reportWakeUpTime(wakeUpTime: Date): string;
+
+  abstract reportKettleBoils(boilCount: number): string;
 }
 
 class WholeStorySpanish extends WholeStory {
-  doSay(stats: DayStats): string {
-    const maxTemp = stats.maxTemperatureOutside;
-    const minTemp = stats.minTemperatureOutside;
+  reportTemperatureInside(tp: TemperaturePoint): string {
+    return `La temperatura actual en casa es de ${tp.value} grados centígrados. `;
+  }
 
-    const cupsOfTea = `Desde entonces has hecho ${stats.teaBoils} tazas de té. `;
-    const cupOfTea = `Desde entonces has hecho ${stats.teaBoils} taza de té. `;
+  reportTemperatureOutside(minTp: TemperaturePoint, maxTp: TemperaturePoint): string {
+    return `Lo más frío que ha estado afuera fue de ${minTp.value} grados
+    a las ${timeUtils.formatLocalTime(minTp.date)} 
+    y lo más cálido fue ${maxTp.value} grados a las ${timeUtils.formatLocalTime(maxTp.date)}. `;
+  }
 
-    const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
+  reportWakeUpTime(wakeUpTime: Date): string {
+    return `Hoy te has levantado a las ${timeUtils.formatLocalTime(wakeUpTime)}. `;
+  }
 
-
-    const wakeUp = stats.wakeUpTime == undefined ?
-    "Creo que sigues en la cama - levantate." :
-    `Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}.`;
-
-    return `
-        ${wakeUp}
-        ${tea} 
-        La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados. 
-        Lo más frío que ha estado afuera fue de ${minTemp.value}
-        grados a las ${timeUtils.formatLocalTime(minTemp.date)} 
-        y lo más cálido fue ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. `;
+  reportKettleBoils(boilCount: number): string {
+    return boilCount == 1 ?
+      `Desde entonces has hecho ${boilCount} taza de té. ` :
+      `Desde entonces has hecho ${boilCount} tazas de té. `;
   }
 }
 
 class WholeStorySpanishLatin extends WholeStory {
-  doSay(stats: DayStats): string {
-    const maxTemp = stats.maxTemperatureOutside;
-    const minTemp = stats.minTemperatureOutside;
+  reportTemperatureInside(tp: TemperaturePoint): string {
+    return `La temperatura actual en casa es de ${tp.value} grados centígrados. `;
+  }
 
-    const cupsOfTea = `Desde entonces has hervido ${stats.teaBoils} termos para el mate. `;
-    const cupOfTea = `Desde entonces has hervido ${stats.teaBoils} termo para el mate. `;
+  reportTemperatureOutside(minTp: TemperaturePoint, maxTp: TemperaturePoint): string {
+    return `Lo más frío que ha estado afuera fue de ${minTp.value} grados
+    a las ${timeUtils.formatLocalTime(minTp.date)} 
+    y lo más cálido fue ${maxTp.value} grados a las ${timeUtils.formatLocalTime(maxTp.date)}. ¡Qué frío!`;
+  }
 
-    const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
+  reportWakeUpTime(wakeUpTime: Date): string {
+    return `Hoy te has levantado a las ${timeUtils.formatLocalTime(wakeUpTime)}. ¿Por qué dormiste tan poco? `;
+  }
 
-    const wakeUp = stats.wakeUpTime == undefined ?
-    "Creo que sigues en la cama - levantate." :
-    `Hoy te has levantado a las ${timeUtils.formatLocalTime(stats.wakeUpTime)}. ¿Por qué dormiste tan poco?`;
-
-    return `
-        ${wakeUp} 
-        ${tea} 
-        La temperatura actual en casa es de ${stats.temperatureInside.value} grados centígrados.
-        Lo más frío que ha estado afuera fue de ${minTemp.value} grados
-        a las ${timeUtils.formatLocalTime(minTemp.date)} 
-        y lo más cálido fue ${maxTemp.value} grados a las ${timeUtils.formatLocalTime(maxTemp.date)}. ¡Qué frío!`;
+  reportKettleBoils(boilCount: number): string {
+    return boilCount == 1 ?
+      `Desde entonces has hervido ${boilCount} termo para el mate. ` :
+      `Desde entonces has hervido ${boilCount} termos para el mate. `;
   }
 }
 
 class WholeStoryEnglish extends WholeStory {
-  doSay(stats: DayStats): string {
-    const maxTemp = stats.maxTemperatureOutside;
-    const minTemp = stats.minTemperatureOutside;
+  reportTemperatureInside(tp: TemperaturePoint): string {
+    return `Current temperature at home is ${tp.value} degrees celsius. `;
+  }
 
-    const cupsOfTea = `Since then you have made ${stats.teaBoils} cups of tea. `;
-    const cupOfTea = `Since then you have made ${stats.teaBoils} cup of tea. `;
+  reportTemperatureOutside(minTp: TemperaturePoint, maxTp: TemperaturePoint): string {
+    return `The coldest it has been outside was ${minTp.value} degrees at ${timeUtils.formatLocalTime(minTp.date)}
+    and the warmest ${maxTp.value} degrees at ${timeUtils.formatLocalTime(maxTp.date)}. `;
+  }
 
-    const tea = stats.teaBoils == 1 ? cupOfTea : cupsOfTea;
+  reportWakeUpTime(wakeUpTime: Date): string {
+    return `Today you have woken up at a ${timeUtils.formatLocalTime(wakeUpTime)}. `;
+  }
 
-    const wakeUp = stats.wakeUpTime == undefined ?
-    "We haven't seen you around the house today." :
-    `Today you have woken up at a ${timeUtils.formatLocalTime(stats.wakeUpTime)}.`;
-
-    return `
-        ${wakeUp} 
-        ${tea}
-        Current temperature at home is ${stats.temperatureInside.value} degrees celsius. 
-        The coldest it has been outside was ${minTemp.value} degrees at ${timeUtils.formatLocalTime(minTemp.date)}
-        and the warmest ${maxTemp.value} degrees at ${timeUtils.formatLocalTime(maxTemp.date)}.`;
+  reportKettleBoils(boilCount: number): string {
+    return boilCount == 1 ?
+      `You have boiled ${boilCount} kettle for tea. ` :
+      `You have boiled ${boilCount} kettles for tea. `;
   }
 }

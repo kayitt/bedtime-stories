@@ -23,11 +23,11 @@ describe("day stats fetcher", function () {
 
     expect(result.teaBoils).to.equal(1);
     expect(result.wakeUpTime).deep.equal(new Date("2021-03-08T07:45:00Z"));
-    expect(result.temperatureInside.value).to.equal(1);
-    expect(result.minTemperatureOutside.value).to.equal(20.1);
-    expect(result.minTemperatureOutside.date).deep.equal(new Date("2021-03-08T07:45:00Z"));
-    expect(result.maxTemperatureOutside.value).to.equal(21.1);
-    expect(result.maxTemperatureOutside.date).deep.equal(new Date("2021-03-08T07:45:00Z"));
+    expect(result.temperatureInside?.value).to.equal(1);
+    expect(result.minTemperatureOutside?.value).to.equal(20.1);
+    expect(result.minTemperatureOutside?.date).deep.equal(new Date("2021-03-08T07:45:00Z"));
+    expect(result.maxTemperatureOutside?.value).to.equal(21.1);
+    expect(result.maxTemperatureOutside?.date).deep.equal(new Date("2021-03-08T07:45:00Z"));
   });
 
   it("throws when date does not exist", async function () {
